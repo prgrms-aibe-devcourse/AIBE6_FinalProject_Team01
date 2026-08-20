@@ -1,6 +1,6 @@
 # Plamingo 로컬 성능 모니터링 가이드
 
-Prometheus, Grafana, k6를 연결해 Spring Boot 백엔드의 요청량, 오류율, 응답 시간, JVM 메모리를 로컬에서 확인한다.
+Prometheus, Grafana, Loki, Alloy, k6를 연결해 Spring Boot 백엔드의 요청량, 오류율, 응답 시간, JVM 메모리와 로그를 로컬에서 확인한다.
 
 > 이 구성은 로컬 테스트 전용이다. 운영 서버 URL이나 운영 데이터베이스를 대상으로 실행하지 않는다.
 
@@ -11,15 +11,16 @@ k6
  └─ HTTP/WebSocket 부하
            ↓
 Spring Boot :8080
- └─ /actuator/prometheus
-           ↓ 5초마다 수집
-Prometheus :9090
-           ↓ 데이터소스
-Grafana :3001
+ ├─ /actuator/prometheus → Prometheus :9090 ┐
+ └─ 애플리케이션·액세스 로그 → Alloy → Loki :3100
+                                             ↓
+                                        Grafana :3001
 ```
 
 - **Spring Boot Actuator**: `/actuator/prometheus`로 HTTP 요청, 오류, 응답 시간, JVM 지표를 노출한다.
 - **Prometheus**: Spring Boot 지표를 5초마다 수집하고 k6 지표를 Remote Write로 저장한다.
+- **Alloy**: Spring Boot 애플리케이션 로그와 Tomcat 액세스 로그를 읽어 Loki로 전송한다.
+- **Loki**: 성능 테스트 로그를 7일간 로컬에 보관하고 LogQL 조회를 제공한다.
 - **Grafana**: Prometheus 데이터를 미리 구성된 `Plamingo Backend` 대시보드로 표시한다.
 - **k6**: Smoke, Load, Spike, Stress, Soak, WebSocket 시나리오로 부하를 발생시킨다.
 
@@ -27,12 +28,17 @@ Grafana :3001
 
 | 파일 | 역할 |
 | --- | --- |
-| `backend/compose.yml` | MySQL, Redis, Prometheus, Grafana 실행 |
+| `backend/compose.yml` | MySQL, Redis, Prometheus, Loki, Alloy, Grafana 실행 |
 | `backend/src/main/resources/application-local.yml` | 로컬 Actuator 및 HTTP 히스토그램 설정 |
 | `backend/src/main/resources/application-performance.yml` | 외부 API 차단과 성능 테스트 전용 설정 |
 | `performance/start-monitoring.sh` | macOS/Linux 모니터링 환경 실행 및 준비 상태 확인 |
 | `performance/start-monitoring.ps1` | Windows 모니터링 환경 실행 및 준비 상태 확인 |
 | `performance/prometheus/prometheus.yml` | Spring Boot 지표 수집 및 Remote Write 수신 설정 |
+| `performance/LOAD_TEST_RUNBOOK.md` | 설치부터 결과 보고까지 전체 부하 테스트 실행 절차 |
+| `performance/PERFORMANCE_BOTTLENECK_GUIDE.md` | Grafana 병목 분석 순서, PromQL 및 판정 기준 |
+| `performance/loki/loki-config.yml` | Loki 로컬 저장소와 7일 보관 설정 |
+| `performance/alloy/config.alloy` | 애플리케이션·액세스 로그 수집 설정 |
+| `performance/LOKI_GUIDE.md` | Loki 실행, 조회, 문제 해결 가이드 |
 | `performance/grafana/provisioning/` | Prometheus 데이터소스와 대시보드 자동 등록 |
 | `performance/grafana/dashboards/plamingo-backend.json` | Grafana 기본 대시보드 |
 | `performance/compose.yml` | k6 컨테이너 설정 |
@@ -97,7 +103,7 @@ chmod +x performance/start-monitoring.sh
 
 스크립트는 다음 작업을 수행한다.
 
-1. MySQL, Redis, Prometheus, Grafana 컨테이너 실행
+1. MySQL, Redis, Prometheus, Loki, Alloy, Grafana 컨테이너 실행
 2. 실제 Grafana 호스트 포트 확인
 3. Prometheus와 Grafana가 응답할 때까지 최대 60초 대기
 4. 접속 주소 출력
@@ -151,6 +157,8 @@ curl -i 'http://localhost:8080/api/places/search?query=osaka'
 | Backend Health | http://localhost:8080/actuator/health | 없음 |
 | Backend Metrics | http://localhost:8080/actuator/prometheus | 없음 |
 | Prometheus | http://localhost:9090 | 없음 |
+| Loki | http://localhost:3100/ready | 없음 |
+| Alloy UI | http://localhost:12345 | 없음 |
 | Grafana | http://localhost:3001 | `GRAFANA_ADMIN_USER` / `GRAFANA_ADMIN_PASSWORD` |
 
 Grafana 로그인 후 다음 경로로 이동한다.
@@ -159,13 +167,13 @@ Grafana 로그인 후 다음 경로로 이동한다.
 Dashboards → Plamingo → Plamingo Backend
 ```
 
-기본 대시보드는 10초마다 새로고침되며 다음 항목을 표시한다.
+로그는 `Explore → Loki`에서 조회한다. 상세 쿼리와 검증 절차는
+[`performance/LOKI_GUIDE.md`](./LOKI_GUIDE.md)를 참고한다.
 
-1. Prometheus 수집 상태
-2. 초당 요청 수
-3. HTTP 5xx 오류율
-4. 응답 시간 p95 및 p99
-5. JVM 힙 메모리 사용량
+기본 대시보드는 5초마다 새로고침되며 API 응답시간·오류율, HikariCP,
+Tomcat 스레드, CPU, JVM 힙과 GC를 포함한 15개 패널을 표시한다. 처음부터
+결과 보고까지의 전체 절차는 [`LOAD_TEST_RUNBOOK.md`](./LOAD_TEST_RUNBOOK.md)를
+참고한다.
 
 ### Prometheus 수집 상태 확인
 
@@ -376,7 +384,7 @@ unset TEST_PASSWORD EXPECT_EXTERNAL_GUARD TRIP_ID
 컨테이너를 중지하되 데이터를 유지하려면 다음 명령을 사용한다.
 
 ```bash
-docker compose -f backend/compose.yml stop mysql redis prometheus grafana
+docker compose -f backend/compose.yml stop mysql redis prometheus loki alloy grafana
 ```
 
 컨테이너를 제거하되 볼륨을 유지하려면 다음 명령을 사용한다.
