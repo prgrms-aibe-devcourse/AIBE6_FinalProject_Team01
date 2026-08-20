@@ -13,6 +13,7 @@ services:
       EXPECT_EXTERNAL_GUARD: ${EXPECT_EXTERNAL_GUARD:-false}
       PERFORMANCE_MEMBER_COUNT: ${PERFORMANCE_MEMBER_COUNT:-1000}
       K6_PROMETHEUS_RW_SERVER_URL: http://host.docker.internal:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: "p(95),p(99),min,med,max,avg"
     volumes:
       - ./k6:/scripts:ro
     extra_hosts:
