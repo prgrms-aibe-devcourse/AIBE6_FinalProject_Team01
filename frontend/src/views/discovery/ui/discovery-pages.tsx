@@ -24,9 +24,9 @@ import {
 } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import {
-    copyCardItinerary,
     fetchPublicCardDetail,
     filterPublicRecordsForDay,
+    ItineraryCopyFlow,
     mergePublicRecordsWithItinerary,
     type CardSort,
     type PublicCard,
@@ -34,7 +34,6 @@ import {
     useExploreCardStore,
 } from '@/features/explore-card'
 import { REALTIME_EVENT_NAME, type RealtimeEvent } from '@/shared/lib'
-import { CreateTripModal } from '@/features/manage-trip'
 import { resolveMediaUrl } from '@/shared/api/client'
 import { KanbanMapPanel } from '@/widgets/trip-room'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -432,8 +431,7 @@ export function TravelCard({
                     title="내가 참여한 여행 카드"
                     className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/90 px-3 py-2 text-[11px] font-extrabold text-brand-700 shadow-sm backdrop-blur-sm"
                 >
-                    <BadgeCheckIcon size={14} />
-                    내 여행 카드
+                    <BadgeCheckIcon size={14} />내 여행 카드
                 </span>
             )}
             <div className="absolute -inset-x-px -bottom-px z-10 flex h-[177px] flex-col justify-end gap-2 rounded-b-[28px] bg-gradient-to-t from-white via-white/85 to-white/0 px-[17px] pb-[17px] pt-16 text-slate-900">
@@ -821,6 +819,7 @@ function PublicRecordDetail({
     onBack: () => void
 }) {
     const [view, setView] = useState<'cover' | 'panel' | 'map'>('cover')
+    const [focusedItemId, setFocusedItemId] = useState<string | null>(null)
     const selectedDay =
         detail.itinerary.find((day) => String(day.id) === selectedDayId) ??
         detail.itinerary[0] ??
@@ -870,9 +869,9 @@ function PublicRecordDetail({
                                 previewDayId={null}
                                 hoveredItemId={null}
                                 onItemHoverChange={() => undefined}
-                                focusedItemId={null}
+                                focusedItemId={focusedItemId}
                                 focusedPlaceId={null}
-                                onItemFocus={() => undefined}
+                                onItemFocus={setFocusedItemId}
                                 onPlaceFocus={() => undefined}
                             />
                         </div>
@@ -936,7 +935,10 @@ function PublicRecordDetail({
                                 <button
                                     key={day.id}
                                     type="button"
-                                    onClick={() => onSelectDay(String(day.id))}
+                                    onClick={() => {
+                                        onSelectDay(String(day.id))
+                                        setFocusedItemId(null)
+                                    }}
                                     className={`shrink-0 rounded-full px-4 py-2 text-xs font-extrabold transition ${
                                         selectedDay?.id === day.id
                                             ? 'bg-brand text-white'
@@ -991,7 +993,33 @@ function PublicRecordDetail({
                                             <span className="absolute bottom-[-1.75rem] left-[15px] top-9 border-l-2 border-dotted border-brand-100" />
                                         )}
                                         {entry.kind === 'itinerary' ? (
-                                            <article className="rounded-[22px] border border-dashed border-slate-300 bg-white p-5">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setFocusedItemId(
+                                                        focusedItemId ===
+                                                            String(
+                                                                entry
+                                                                    .itineraryItem
+                                                                    .id,
+                                                            )
+                                                            ? null
+                                                            : String(
+                                                                  entry
+                                                                      .itineraryItem
+                                                                      .id,
+                                                              ),
+                                                    )
+                                                }
+                                                className={`w-full rounded-[22px] border border-dashed bg-white p-5 text-left transition ${
+                                                    focusedItemId ===
+                                                    String(
+                                                        entry.itineraryItem.id,
+                                                    )
+                                                        ? 'border-brand bg-brand-50'
+                                                        : 'border-slate-300 hover:border-brand-200 hover:bg-slate-50'
+                                                }`}
+                                            >
                                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                                     <div className="min-w-0">
                                                         <div className="flex flex-wrap items-center gap-2">
@@ -1030,13 +1058,78 @@ function PublicRecordDetail({
                                                 <p className="mt-5 text-sm font-semibold text-slate-400">
                                                     작성된 여행 기록이 없습니다.
                                                 </p>
-                                            </article>
+                                            </button>
                                         ) : (
-                                            <article className="rounded-[22px] border border-slate-100 bg-white p-5 shadow-[0_10px_28px_rgb(var(--rgb-app-ink)/0.07)]">
+                                            <article
+                                                role={
+                                                    entry.itineraryItem
+                                                        ? 'button'
+                                                        : undefined
+                                                }
+                                                tabIndex={
+                                                    entry.itineraryItem
+                                                        ? 0
+                                                        : undefined
+                                                }
+                                                onClick={() => {
+                                                    if (!entry.itineraryItem)
+                                                        return
+                                                    const itemId = String(
+                                                        entry.itineraryItem.id,
+                                                    )
+                                                    setFocusedItemId(
+                                                        focusedItemId === itemId
+                                                            ? null
+                                                            : itemId,
+                                                    )
+                                                }}
+                                                onKeyDown={(event) => {
+                                                    if (
+                                                        !entry.itineraryItem ||
+                                                        (event.key !==
+                                                            'Enter' &&
+                                                            event.key !== ' ')
+                                                    )
+                                                        return
+                                                    event.preventDefault()
+                                                    const itemId = String(
+                                                        entry.itineraryItem.id,
+                                                    )
+                                                    setFocusedItemId(
+                                                        focusedItemId === itemId
+                                                            ? null
+                                                            : itemId,
+                                                    )
+                                                }}
+                                                className={`rounded-[22px] border bg-white p-5 shadow-[0_10px_28px_rgb(var(--rgb-app-ink)/0.07)] transition ${
+                                                    entry.itineraryItem &&
+                                                    focusedItemId ===
+                                                        String(
+                                                            entry.itineraryItem
+                                                                .id,
+                                                        )
+                                                        ? 'border-brand bg-brand-50'
+                                                        : entry.itineraryItem
+                                                          ? 'cursor-pointer border-slate-100 hover:border-brand-200'
+                                                          : 'border-slate-100'
+                                                }`}
+                                            >
                                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                                     <div className="min-w-0">
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <h3 className="text-lg font-black text-slate-900">
+                                                            <h3
+                                                                className={`text-lg font-black transition ${
+                                                                    entry.itineraryItem &&
+                                                                    focusedItemId ===
+                                                                        String(
+                                                                            entry
+                                                                                .itineraryItem
+                                                                                .id,
+                                                                        )
+                                                                        ? 'text-brand-700'
+                                                                        : 'text-slate-900'
+                                                                }`}
+                                                            >
                                                                 {
                                                                     entry.record
                                                                         .placeName
@@ -1076,14 +1169,25 @@ function PublicRecordDetail({
                                                         {entry.record.memo}
                                                     </p>
                                                 )}
-                                                <RecordPhotoGrid
-                                                    imageUrls={
-                                                        entry.record.imageUrls
+                                                <div
+                                                    onClick={(event) =>
+                                                        event.stopPropagation()
                                                     }
-                                                    placeName={
-                                                        entry.record.placeName
+                                                    onKeyDown={(event) =>
+                                                        event.stopPropagation()
                                                     }
-                                                />
+                                                >
+                                                    <RecordPhotoGrid
+                                                        imageUrls={
+                                                            entry.record
+                                                                .imageUrls
+                                                        }
+                                                        placeName={
+                                                            entry.record
+                                                                .placeName
+                                                        }
+                                                    />
+                                                </div>
                                             </article>
                                         )}
                                     </li>
@@ -1478,115 +1582,6 @@ function formatPublicTripDates(
 ) {
     if (!startDate || !endDate) return '날짜 미정'
     return `${startDate.replaceAll('-', '.')} - ${endDate.replaceAll('-', '.')}`
-}
-
-function ItineraryCopyFlow({
-    card,
-    onClose,
-}: {
-    card: PublicCard
-    onClose: () => void
-}) {
-    const navigate = useNavigate()
-    const [step, setStep] = useState<'confirm' | 'success'>('confirm')
-    const [createOpen, setCreateOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [copyError, setCopyError] = useState<string | null>(null)
-    const [copiedTripId, setCopiedTripId] = useState<number | null>(null)
-
-    async function copy(targetTripId: number) {
-        setLoading(true)
-        setCopyError(null)
-        try {
-            await copyCardItinerary(card.id, targetTripId, 'APPEND')
-            setCopiedTripId(targetTripId)
-            setStep('success')
-        } catch (caught) {
-            setCopyError(copyErrorMessage(caught))
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    return (
-        <>
-            {!createOpen && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/55 p-4">
-                    <section className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
-                        {step === 'confirm' && (
-                            <>
-                                <h2 className="text-center text-xl font-black">
-                                    이 일정을 새 여행으로 담을까요?
-                                </h2>
-                                <p className="mt-3 text-center text-sm leading-6 text-slate-500">
-                                    장소와 일정만 담으며 기록·사진·비용·개인
-                                    메모는 제외됩니다. 새로 만드는 여행에
-                                    담깁니다.
-                                </p>
-                                {copyError && <CopyError text={copyError} />}
-                                <div className="mt-7 grid grid-cols-2 gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={onClose}
-                                        className="rounded-xl bg-slate-100 py-3 font-bold text-slate-500"
-                                    >
-                                        취소
-                                    </button>
-                                    <button
-                                        type="button"
-                                        disabled={loading}
-                                        onClick={() => setCreateOpen(true)}
-                                        className="rounded-xl bg-brand py-3 font-extrabold text-white disabled:opacity-50"
-                                    >
-                                        새 여행 만들어 담기
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                        {step === 'success' && copiedTripId && (
-                            <>
-                                <h2 className="text-center text-2xl font-black">
-                                    일정을 담았습니다
-                                </h2>
-                                <p className="mt-3 text-center text-sm text-slate-500">
-                                    대상 여행방에서 담은 장소와 일정을 확인해
-                                    보세요.
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        navigate(`/app/room/${copiedTripId}`)
-                                    }
-                                    className="mt-7 w-full rounded-xl bg-brand py-3 font-extrabold text-white"
-                                >
-                                    완료
-                                </button>
-                            </>
-                        )}
-                    </section>
-                </div>
-            )}
-            {createOpen && (
-                <CreateTripModal
-                    onClose={() => setCreateOpen(false)}
-                    requireDates
-                    inviteAfterCreate={false}
-                    onCreated={(tripId) => {
-                        setCreateOpen(false)
-                        void copy(tripId)
-                    }}
-                />
-            )}
-        </>
-    )
-}
-
-function CopyError({ text }: { text: string }) {
-    return <p className="mt-4 text-sm font-semibold text-red-500">{text}</p>
-}
-
-function copyErrorMessage(error: unknown) {
-    return error instanceof Error ? error.message : '일정을 담지 못했습니다.'
 }
 
 function PageButton({

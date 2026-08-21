@@ -23,6 +23,7 @@ import { useTripStore } from '@/features/manage-trip'
 import {
     fetchBookmarkedCards,
     fetchTripSharedBookmarks,
+    ItineraryCopyFlow,
     removeBookmark,
     shareBookmarkToTrip,
     unshareBookmarkFromTrip,
@@ -89,6 +90,7 @@ export function MyPage() {
     const [bookmarkQuery, setBookmarkQuery] = useState('')
     const [bookmarksLoading, setBookmarksLoading] = useState(true)
     const [shareCard, setShareCard] = useState<PublicCard | null>(null)
+    const [copyCard, setCopyCard] = useState<PublicCard | null>(null)
     const [sharingTripId, setSharingTripId] = useState<number | null>(null)
     const [sharedTripIds, setSharedTripIds] = useState<Set<number>>(new Set())
     const [shareStatusLoading, setShareStatusLoading] = useState(false)
@@ -524,9 +526,7 @@ export function MyPage() {
                                         onBookmark={() =>
                                             void removeSavedBookmark(card.id)
                                         }
-                                        onCopy={() =>
-                                            navigate(`/app/explore/${card.id}`)
-                                        }
+                                        onCopy={() => setCopyCard(card)}
                                         onOpen={() =>
                                             navigate(`/app/explore/${card.id}`)
                                         }
@@ -581,6 +581,13 @@ export function MyPage() {
                         )}
                     </div>
                 </section>
+
+                {copyCard && (
+                    <ItineraryCopyFlow
+                        card={copyCard}
+                        onClose={() => setCopyCard(null)}
+                    />
+                )}
 
                 {shareCard && (
                     <div

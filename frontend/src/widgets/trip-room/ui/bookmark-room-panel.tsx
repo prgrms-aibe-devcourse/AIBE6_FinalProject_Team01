@@ -134,8 +134,8 @@ export function BookmarkRoomPanel({
                     공유된 북마크가 없습니다.
                 </p>
             ) : (
-                <div className="mx-auto w-full max-w-5xl">
-                    <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+                <div className="mx-auto w-full max-w-[1440px]">
+                    <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                         {pageItems.map(
                             ({ card, sharerNicknames, sharedByMe }) => (
                                 <div key={card.id} className="min-w-0">
@@ -146,6 +146,7 @@ export function BookmarkRoomPanel({
                                         }
                                         onCopy={() => onOpen(card.id)}
                                         onOpen={() => onOpen(card.id)}
+                                        showCopyAction={false}
                                         flat
                                     />
                                     <div className="mt-2 flex items-center justify-between gap-2 px-2">
