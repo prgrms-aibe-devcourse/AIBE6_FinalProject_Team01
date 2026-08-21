@@ -39,7 +39,11 @@ import {
     useTripStore,
 } from '@/features/manage-trip'
 import { getApiErrorMessage } from '@/shared/api/client'
-import { REALTIME_EVENT_NAME, type RealtimeEvent } from '@/shared/lib'
+import {
+    isExpenseRealtimeEvent,
+    REALTIME_EVENT_NAME,
+    type RealtimeEvent,
+} from '@/shared/lib'
 import { useCurrentUserStore } from '@/shared/model'
 import {
     type ActiveTripAwareness,
@@ -102,6 +106,7 @@ export function TripRoom({ mode = 'plan' }: { mode?: TripRoomMode }) {
     }>({ tripId: undefined, days: [] })
     const [itineraryVersion, setItineraryVersion] = useState(0)
     const [realtimeVersion, setRealtimeVersion] = useState(0)
+    const [expenseRealtimeVersion, setExpenseRealtimeVersion] = useState(0)
     const initializedItineraryTripsRef = useRef(new Set<number>())
     const [mapPinVersion, setMapPinVersion] = useState(0)
     const [mapPinState, setMapPinState] = useState<{
@@ -282,7 +287,10 @@ export function TripRoom({ mode = 'plan' }: { mode?: TripRoomMode }) {
     useEffect(() => {
         const handleRealtimeChange = (event: Event) => {
             const detail = (event as CustomEvent<RealtimeEvent>).detail
-            if (detail.tripId === tripId) {
+            if (tripId != null && detail.tripId === tripId) {
+                if (isExpenseRealtimeEvent(detail, tripId)) {
+                    setExpenseRealtimeVersion((current) => current + 1)
+                }
                 if (detail.targetType === 'MAP_PIN') {
                     setMapPinVersion((current) => current + 1)
                     return
@@ -990,6 +998,9 @@ export function TripRoom({ mode = 'plan' }: { mode?: TripRoomMode }) {
                                     places={displayedPlaces}
                                     itineraryDays={itineraryDays}
                                     tripId={tripId!}
+                                    expenseRealtimeVersion={
+                                        expenseRealtimeVersion
+                                    }
                                     canManage={!inviteCode && canManagePlaces}
                                     guestView={Boolean(inviteCode)}
                                     headerContainer={headerContainer}

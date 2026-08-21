@@ -2,11 +2,30 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
     isAccountSuspendedEvent,
+    isExpenseRealtimeEvent,
     isTripRealtimeEvent,
     parseRealtimeMessage,
     shouldDispatchNotificationToTrip,
     shouldRefreshTripList,
 } from '../../../shared/lib/realtime-event.ts'
+
+test('t7 같은 여행방의 지출 이벤트만 정산 화면 갱신 대상으로 판단한다', () => {
+    const expense = {
+        eventId: 'event-expense',
+        type: 'TRIP_CHANGED',
+        tripId: 7,
+        targetType: 'EXPENSE',
+        targetId: 10,
+        occurredAt: '2026-08-21T00:00:00Z',
+    }
+
+    assert.equal(isExpenseRealtimeEvent(expense, 7), true)
+    assert.equal(isExpenseRealtimeEvent(expense, 8), false)
+    assert.equal(
+        isExpenseRealtimeEvent({ ...expense, targetType: 'TRIP_PLACE' }, 7),
+        false,
+    )
+})
 
 test('t1 올바른 객체 메시지를 파싱한다', () => {
     assert.deepEqual(parseRealtimeMessage('{"eventId":"event-1"}'), {

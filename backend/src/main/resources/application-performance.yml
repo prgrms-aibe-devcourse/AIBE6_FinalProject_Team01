@@ -36,6 +36,30 @@ management:
       percentiles:
         http.server.requests: 0.5,0.95,0.99
 
+logging:
+  file:
+    name: ${PERFORMANCE_LOG_PATH:build/performance-logs/backend.log}
+  level:
+    root: INFO
+    back.backend: INFO
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 7
+      total-size-cap: 1GB
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+    accesslog:
+      enabled: true
+      directory: ${PERFORMANCE_ACCESS_LOG_DIR:${user.dir}/build/performance-logs}
+      prefix: access
+      suffix: .log
+      rotate: true
+      pattern: '%t method=%m path=%U status=%s duration_us=%D bytes=%b'
+
 app:
   performance:
     allow-external-apis: ${PERFORMANCE_ALLOW_EXTERNAL_APIS:false}
@@ -56,4 +80,3 @@ app:
     openai:
       api-key: ${PERFORMANCE_OPENAI_API_KEY:disabled}
       base-url: ${PERFORMANCE_OPENAI_API_BASE_URL:http://127.0.0.1:9}
-

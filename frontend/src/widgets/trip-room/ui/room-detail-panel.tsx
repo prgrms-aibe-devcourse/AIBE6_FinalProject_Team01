@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -38,6 +38,7 @@ import { getApiErrorMessage } from '@/shared/api/client'
 import { globalModal, useCurrentUserStore } from '@/shared/model'
 import { resolveMemberNickname } from '../lib/member-lookup'
 import { UNSAVED_DATE_MODAL_COPY } from '../lib/unsaved-date-modal-copy'
+import { upsertPlaceComment } from '../lib/place-comments'
 import { ActivityLogPanel } from './activity-log'
 import { useActivityLogStore } from '@/features/view-activity-log'
 import { useNotificationStore } from '@/features/manage-notification'
@@ -193,6 +194,7 @@ export function RoomDetailPanel({
     const navigate = useNavigate()
     const [activityOpen, setActivityOpen] = useState(initialActivityOpen)
     const [commentPlaceId, setCommentPlaceId] = useState<string | null>(null)
+    const commentMutationVersionRef = useRef(0)
     const [commentError, setCommentError] = useState<string | null>(null)
     const [inviteOpen, setInviteOpen] = useState(false)
     const { members } = useTripMembers(tripId)
@@ -281,10 +283,14 @@ export function RoomDetailPanel({
 
     const refreshCommentSheet = useCallback(
         async (placeId: string) => {
+            const mutationVersion = commentMutationVersionRef.current
             try {
                 const comments = (
                     await getPlaceComments(tripId, Number(placeId))
                 ).map(mapApiComment)
+                if (mutationVersion !== commentMutationVersionRef.current) {
+                    return
+                }
                 setComments(placeId, comments)
                 onUpdatePlace(placeId, (place) => ({
                     ...place,
@@ -316,11 +322,15 @@ export function RoomDetailPanel({
         try {
             const comment = await addPlaceComment(tripId, Number(placeId), text)
             const newComment = mapApiComment(comment)
+            commentMutationVersionRef.current += 1
             addComment(placeId, newComment)
             onUpdatePlace(placeId, (place) => ({
                 ...place,
-                comments: [...place.comments, newComment],
-                commentCount: place.commentCount + 1,
+                comments: upsertPlaceComment(place.comments, newComment),
+                commentCount: new Set([
+                    ...place.comments.map((item) => item.id),
+                    newComment.id,
+                ]).size,
             }))
             refreshCollaborationData()
         } catch (error) {
@@ -335,6 +345,7 @@ export function RoomDetailPanel({
         setCommentError(null)
         try {
             await deletePlaceComment(tripId, Number(placeId), Number(commentId))
+            commentMutationVersionRef.current += 1
             removeComment(placeId, commentId)
             onUpdatePlace(placeId, (place) => ({
                 ...place,

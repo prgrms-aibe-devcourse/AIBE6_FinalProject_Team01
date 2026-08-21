@@ -10,6 +10,10 @@ export type PublicCard = {
     title: string
     summary: string | null
     destination: string | null
+    destinationLat: number | null
+    destinationLng: number | null
+    destinationEnglishName: string | null
+    destinationCountryCode: string | null
     coverImageUrl: string | null
     travelStyles: string[]
     tags: string[]

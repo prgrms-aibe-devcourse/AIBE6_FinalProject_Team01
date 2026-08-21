@@ -21,6 +21,7 @@ import {
     resolveMediaUrl,
 } from '@/shared/api/client'
 import { globalModal, useCurrentUserStore } from '@/shared/model'
+import { localDateToday } from '@/features/manage-trip'
 import {
     addMonths,
     createCalendarDays,
@@ -89,9 +90,23 @@ export function DateVotePanel({
     const [error, setError] = useState<string | null>(null)
     const gestureRef = useRef<SelectionGesture | null>(null)
     const lastPointerType = useRef('mouse')
+    const minimumDate = useMemo(() => localDateToday(), [])
 
     const commitDraftRange = useCallback(
         (rangeStart: string, rangeEnd: string, selecting: boolean) => {
+            if (
+                selecting &&
+                dateRange(rangeStart, rangeEnd).some(
+                    (date) => date < minimumDate,
+                )
+            ) {
+                globalModal.open({
+                    title: '지난 날짜는 선택할 수 없습니다.',
+                    description: '오늘 이후의 조율 가능 날짜를 선택해 주세요.',
+                    confirmText: '확인',
+                })
+                return false
+            }
             const result = updateDateSetWithinLimit(
                 draftDates,
                 rangeStart,
@@ -110,7 +125,7 @@ export function DateVotePanel({
             )
             return true
         },
-        [draftDates],
+        [draftDates, minimumDate],
     )
 
     useEffect(() => {
@@ -238,7 +253,13 @@ export function DateVotePanel({
                 const mine = availabilityResult.value.find(
                     (item) => item.memberId === memberId,
                 )
-                setDraftDates(new Set(mine?.availableDates ?? []))
+                setDraftDates(
+                    new Set(
+                        (mine?.availableDates ?? []).filter(
+                            (date) => date >= minimumDate,
+                        ),
+                    ),
+                )
                 setDirty(false)
             } else {
                 setError(
@@ -270,7 +291,7 @@ export function DateVotePanel({
         return () => {
             active = false
         }
-    }, [memberId, realtimeVersion, tripId])
+    }, [memberId, minimumDate, realtimeVersion, tripId])
 
     const members = useMemo(() => {
         if (
@@ -326,8 +347,13 @@ export function DateVotePanel({
         [gesture],
     )
     const recommendations = useMemo(
-        () => recommendDateRanges(availabilityByDate, members.length),
-        [availabilityByDate, members.length],
+        () =>
+            recommendDateRanges(
+                availabilityByDate,
+                members.length,
+                minimumDate,
+            ),
+        [availabilityByDate, members.length, minimumDate],
     )
     const selectionIsCurrentProposal =
         proposal?.startDate === startDate && proposal?.endDate === endDate
@@ -420,6 +446,14 @@ export function DateVotePanel({
             setError(AVAILABILITY_LIMIT_ERROR)
             return
         }
+        if (Array.from(draftDates).some((date) => date < minimumDate)) {
+            globalModal.open({
+                title: '지난 날짜는 저장할 수 없습니다.',
+                description: '오늘 이후의 조율 가능 날짜만 선택해 주세요.',
+                confirmText: '확인',
+            })
+            return
+        }
         setSaving(true)
         setError(null)
         try {
@@ -429,7 +463,13 @@ export function DateVotePanel({
             )
             setAvailability(result)
             const mine = result.find((item) => item.memberId === memberId)
-            setDraftDates(new Set(mine?.availableDates ?? []))
+            setDraftDates(
+                new Set(
+                    (mine?.availableDates ?? []).filter(
+                        (date) => date >= minimumDate,
+                    ),
+                ),
+            )
             setDirty(false)
             onCollaborationChanged?.()
         } catch (cause) {
@@ -443,7 +483,13 @@ export function DateVotePanel({
 
     function resetDraft() {
         const mine = availability.find((item) => item.memberId === memberId)
-        setDraftDates(new Set(mine?.availableDates ?? []))
+        setDraftDates(
+            new Set(
+                (mine?.availableDates ?? []).filter(
+                    (date) => date >= minimumDate,
+                ),
+            ),
+        )
         setDirty(false)
         setTouchAnchor(null)
         setGesture(null)
@@ -596,6 +642,7 @@ export function DateVotePanel({
                         const mine = draftDates.has(dateKey)
                         const previewing = previewDates.has(dateKey)
                         const supported = isSupportedAvailabilityDate(dateKey)
+                        const past = dateKey < minimumDate
                         const currentMonth =
                             date.getMonth() === calendarMonth.getMonth()
                         const alpha = ratio === 0 ? 0 : 0.14 + ratio * 0.72
@@ -603,7 +650,9 @@ export function DateVotePanel({
                             <button
                                 key={dateKey}
                                 type="button"
-                                disabled={!canWrite || !supported || saving}
+                                disabled={
+                                    !canWrite || !supported || past || saving
+                                }
                                 onPointerDown={(event) =>
                                     startDragging(event, dateKey)
                                 }
@@ -626,7 +675,11 @@ export function DateVotePanel({
                                     }
                                     event.preventDefault()
                                 }}
-                                title={`${dateKey} · ${availableMembers.length}/${members.length}명 가능`}
+                                title={
+                                    past
+                                        ? `${dateKey} · 지난 날짜`
+                                        : `${dateKey} · ${availableMembers.length}/${members.length}명 가능`
+                                }
                                 aria-label={`${dateKey}, ${availableMembers.length}명 가능${mine ? ', 내가 선택함' : ''}`}
                                 className={`relative aspect-square rounded-lg text-xs font-bold transition ${
                                     currentMonth
@@ -638,7 +691,7 @@ export function DateVotePanel({
                                             ? 'outline outline-2 outline-brand'
                                             : 'outline outline-2 outline-amber-500'
                                         : ''
-                                } disabled:cursor-default`}
+                                } ${past ? 'opacity-35' : ''} disabled:cursor-default`}
                                 style={{
                                     backgroundColor:
                                         previewing && gesture?.selecting

@@ -35,6 +35,10 @@ export function isTripRealtimeEvent(
     )
 }
 
+export function isExpenseRealtimeEvent(event: RealtimeEvent, tripId: number) {
+    return event.tripId === tripId && event.targetType === 'EXPENSE'
+}
+
 export function shouldRefreshTripList(event: RealtimeEvent) {
     return event.type === 'TRIP_MEMBERS_CHANGED' || event.targetType === 'TRIP'
 }
