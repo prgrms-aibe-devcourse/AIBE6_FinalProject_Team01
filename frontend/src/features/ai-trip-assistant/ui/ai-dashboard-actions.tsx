@@ -286,7 +286,7 @@ export function AiDashboardActions({
                     className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--background-strong-action)] px-3 py-2 text-xs font-extrabold text-[var(--color-strong-action-text)] transition hover:brightness-110"
                 >
                     <RouteIcon size={15} />
-                    AI 일정 재배치
+                    일정 재배치
                 </button>
             </div>
 

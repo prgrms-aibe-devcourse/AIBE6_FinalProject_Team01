@@ -1119,7 +1119,7 @@ export function Home() {
                             </div>
 
                             <section className="flex h-[560px] flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_14px_35px_rgb(var(--rgb-app-ink)/0.06)]">
-                                <div className="flex items-center justify-between px-6 py-5">
+                                <div className="flex shrink-0 items-center justify-between px-6 py-5">
                                     <div>
                                         <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--color-brand-dark)]">
                                             Selected day
@@ -1237,7 +1237,7 @@ export function Home() {
                                     )}
                                 </div>
                                 {itineraryDays.length > 0 && (
-                                    <div className="flex items-center gap-1.5 overflow-x-auto px-6 pb-3 scrollbar-none">
+                                    <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto px-6 pb-3 pt-1 scrollbar-none">
                                         <button
                                             type="button"
                                             onClick={() => {
@@ -1281,7 +1281,7 @@ export function Home() {
                                     </div>
                                 )}
                                 {itineraryDays.length > 0 ? (
-                                    <div className="min-h-[430px] flex-1 [&>div]:h-full [&>div]:border-0 [&>div>button]:hidden [&>div>div]:h-full">
+                                    <div className="min-h-0 flex-1 [&>div]:h-full [&>div]:border-0 [&>div>button]:hidden [&>div>div]:h-full">
                                         <KanbanMapPanel
                                             days={itineraryDays}
                                             places={[]}
@@ -1300,7 +1300,7 @@ export function Home() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="flex min-h-[430px] flex-1 items-center justify-center bg-slate-50">
+                                    <div className="flex min-h-0 flex-1 items-center justify-center bg-slate-50">
                                         <p className="text-sm font-semibold text-slate-400">
                                             아직 등록된 일정이 없어요.
                                         </p>
