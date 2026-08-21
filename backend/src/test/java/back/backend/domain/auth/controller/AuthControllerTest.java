@@ -109,8 +109,8 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("t3 유효하지 않은 리프레시 토큰이면 401을 반환한다")
-    void t3_reissueReturnsUnauthorizedWhenRefreshTokenIsInvalid() throws Exception {
+    @DisplayName("t3 유효하지 않은 리프레시 토큰이면 쿠키를 만료시키고 204를 반환한다")
+    void t3_reissueExpiresCookieAndReturnsNoContentWhenRefreshTokenIsInvalid() throws Exception {
         when(authService.reissue("invalid-token"))
                 .thenThrow(new BusinessException(CommonErrorCode.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."));
 
@@ -119,8 +119,7 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/api/auth/reissue")
                         .cookie(new Cookie("refreshToken", "invalid-token")))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("COMMON_401"))
+                .andExpect(status().isNoContent())
                 .andExpect(header().string(
                         "Set-Cookie",
                         containsString("refreshToken=; Max-Age=0")));

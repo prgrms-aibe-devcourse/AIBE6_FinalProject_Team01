@@ -185,6 +185,7 @@ public class AuthController {
                 response.addHeader(
                         HttpHeaders.SET_COOKIE,
                         refreshTokenCookieProvider.expire().toString());
+                return ResponseEntity.noContent().build();
             }
             throw exception;
         }
