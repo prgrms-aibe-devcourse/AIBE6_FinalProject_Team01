@@ -13,6 +13,7 @@ import {
     TravelCard,
     type TripSharedBookmark,
 } from '@/features/explore-card'
+import { ItineraryCopyFlow } from './itinerary-copy-flow'
 
 const PAGE_SIZE = 6
 
@@ -28,6 +29,9 @@ export function BookmarkRoomPanel({
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [page, setPage] = useState(0)
+    const [copyCard, setCopyCard] = useState<
+        TripSharedBookmark['card'] | null
+    >(null)
     useEffect(() => {
         const controller = new AbortController()
         Promise.resolve().then(() => {
@@ -144,7 +148,7 @@ export function BookmarkRoomPanel({
                                         onBookmark={() =>
                                             void toggleBookmark(card.id)
                                         }
-                                        onCopy={() => onOpen(card.id)}
+                                        onCopy={() => setCopyCard(card)}
                                         onOpen={() => onOpen(card.id)}
                                         flat
                                     />
@@ -214,6 +218,12 @@ export function BookmarkRoomPanel({
                         </nav>
                     )}
                 </div>
+            )}
+            {copyCard && (
+                <ItineraryCopyFlow
+                    card={copyCard}
+                    onClose={() => setCopyCard(null)}
+                />
             )}
         </section>
     )

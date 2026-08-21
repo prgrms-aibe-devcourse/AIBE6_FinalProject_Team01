@@ -29,6 +29,7 @@ import {
     type PublicCard,
     TravelCard,
 } from '@/features/explore-card'
+import { ItineraryCopyFlow } from '@/widgets/trip-room'
 
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 const ALLOWED_PROFILE_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
@@ -86,6 +87,7 @@ export function MyPage() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const bookmarkRailRef = useRef<HTMLDivElement>(null)
     const [bookmarks, setBookmarks] = useState<PublicCard[]>([])
+    const [copyCard, setCopyCard] = useState<PublicCard | null>(null)
     const [bookmarkQuery, setBookmarkQuery] = useState('')
     const [bookmarksLoading, setBookmarksLoading] = useState(true)
     const [shareCard, setShareCard] = useState<PublicCard | null>(null)
@@ -524,9 +526,7 @@ export function MyPage() {
                                         onBookmark={() =>
                                             void removeSavedBookmark(card.id)
                                         }
-                                        onCopy={() =>
-                                            navigate(`/app/explore/${card.id}`)
-                                        }
+                                        onCopy={() => setCopyCard(card)}
                                         onOpen={() =>
                                             navigate(`/app/explore/${card.id}`)
                                         }
@@ -869,6 +869,12 @@ export function MyPage() {
                         </div>
                     </div>
                 </div>
+            )}
+            {copyCard && (
+                <ItineraryCopyFlow
+                    card={copyCard}
+                    onClose={() => setCopyCard(null)}
+                />
             )}
         </div>
     )
