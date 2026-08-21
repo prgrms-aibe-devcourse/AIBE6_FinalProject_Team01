@@ -31,6 +31,7 @@ type Props = {
     onCreated: (tripId: number) => void
     requireDates?: boolean
     inviteAfterCreate?: boolean
+    initialDestination?: DestinationResult | null
 }
 
 export function CreateTripModal({
@@ -38,12 +39,15 @@ export function CreateTripModal({
     onCreated,
     requireDates = false,
     inviteAfterCreate = true,
+    initialDestination = null,
 }: Props) {
     const [title, setTitle] = useState('')
     const [travelStyles, setTravelStyles] = useState<TravelStyle[]>([])
-    const [destinationText, setDestinationText] = useState('')
+    const [destinationText, setDestinationText] = useState(
+        initialDestination?.name ?? '',
+    )
     const [destinationResult, setDestinationResult] =
-        useState<DestinationResult | null>(null)
+        useState<DestinationResult | null>(initialDestination)
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [error, setError] = useState<string | null>(null)

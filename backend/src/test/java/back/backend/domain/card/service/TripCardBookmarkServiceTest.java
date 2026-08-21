@@ -121,7 +121,8 @@ class TripCardBookmarkServiceTest {
     }
 
     private PublicCardResponse card() {
-        return new PublicCardResponse(2L, 5L, 6L, "작성자", "제주", null, "제주", null,
+        return new PublicCardResponse(2L, 5L, 6L, "작성자", "제주", null, "제주",
+                null, null, null, null, null,
                 Set.of(), List.of(), 1, 0, true, false, LocalDateTime.now());
     }
 }

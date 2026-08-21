@@ -87,6 +87,10 @@ class PublicCardServiceTest {
         ReflectionTestUtils.setField(card, "id", 20L);
         Trip trip = Trip.create(1L, "제주 여행", null, Set.of(TravelStyle.FOOD), "제주", null, null);
         ReflectionTestUtils.setField(trip, "id", 10L);
+        ReflectionTestUtils.setField(trip, "destinationLat", 37.5665);
+        ReflectionTestUtils.setField(trip, "destinationLng", 126.9780);
+        ReflectionTestUtils.setField(trip, "destinationEnglishName", "Seoul");
+        ReflectionTestUtils.setField(trip, "destinationCountryCode", "KR");
         when(cardRepository.findAllByVisibilityNot(TripVisibility.PRIVATE)).thenReturn(List.of(card));
         when(tripRepository.findAllById(List.of(10L))).thenReturn(List.of(trip));
         when(memberRepository.findAllById(List.of(1L))).thenReturn(List.of());
@@ -103,6 +107,10 @@ class PublicCardServiceTest {
                 .satisfies(cardResponse -> {
                     assertThat(cardResponse.ownCard()).isTrue();
                     assertThat(cardResponse.travelStyles()).containsExactly(TravelStyle.FOOD);
+                    assertThat(cardResponse.destinationLat()).isEqualTo(37.5665);
+                    assertThat(cardResponse.destinationLng()).isEqualTo(126.9780);
+                    assertThat(cardResponse.destinationEnglishName()).isEqualTo("Seoul");
+                    assertThat(cardResponse.destinationCountryCode()).isEqualTo("KR");
                 });
     }
 

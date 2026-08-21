@@ -1571,6 +1571,21 @@ function ItineraryCopyFlow({
                     onClose={() => setCreateOpen(false)}
                     requireDates
                     inviteAfterCreate={false}
+                    initialDestination={
+                        card.destination != null &&
+                        card.destinationLat != null &&
+                        card.destinationLng != null
+                            ? {
+                                  name: card.destination,
+                                  englishName:
+                                      card.destinationEnglishName ??
+                                      card.destination,
+                                  countryCode: card.destinationCountryCode,
+                                  lat: card.destinationLat,
+                                  lng: card.destinationLng,
+                              }
+                            : null
+                    }
                     onCreated={(tripId) => {
                         setCreateOpen(false)
                         void copy(tripId)
