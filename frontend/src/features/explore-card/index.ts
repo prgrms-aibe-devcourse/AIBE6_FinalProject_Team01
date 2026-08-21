@@ -6,3 +6,4 @@ export {
     type PublicRecordTimelineEntry,
 } from './model/public-records'
 export { TravelCard } from './ui/travel-card'
+export { ItineraryCopyFlow } from './ui/itinerary-copy-flow'

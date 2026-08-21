@@ -23,13 +23,13 @@ import { useTripStore } from '@/features/manage-trip'
 import {
     fetchBookmarkedCards,
     fetchTripSharedBookmarks,
+    ItineraryCopyFlow,
     removeBookmark,
     shareBookmarkToTrip,
     unshareBookmarkFromTrip,
     type PublicCard,
     TravelCard,
 } from '@/features/explore-card'
-import { ItineraryCopyFlow } from '@/widgets/trip-room'
 
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 const ALLOWED_PROFILE_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
@@ -582,6 +582,13 @@ export function MyPage() {
                     </div>
                 </section>
 
+                {copyCard && (
+                    <ItineraryCopyFlow
+                        card={copyCard}
+                        onClose={() => setCopyCard(null)}
+                    />
+                )}
+
                 {shareCard && (
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4"
@@ -869,12 +876,6 @@ export function MyPage() {
                         </div>
                     </div>
                 </div>
-            )}
-            {copyCard && (
-                <ItineraryCopyFlow
-                    card={copyCard}
-                    onClose={() => setCopyCard(null)}
-                />
             )}
         </div>
     )
