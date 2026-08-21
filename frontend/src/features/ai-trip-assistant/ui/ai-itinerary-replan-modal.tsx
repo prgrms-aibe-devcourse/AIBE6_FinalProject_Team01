@@ -399,7 +399,7 @@ export function AiItineraryReplanModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        aria-label="AI 일정 재배치 닫기"
+                        aria-label="일정 재배치 닫기"
                         className="rounded-xl border border-white bg-white/80 p-2 text-slate-400 shadow-sm hover:text-slate-700"
                     >
                         <XIcon size={18} />
