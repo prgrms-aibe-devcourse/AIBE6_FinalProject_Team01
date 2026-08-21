@@ -3,6 +3,10 @@ package back.backend.domain.expense.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -90,6 +94,9 @@ class ExpenseServiceTest {
         assertThat(participant.getStatus()).isEqualTo(ParticipantSettlementStatus.COMPLETED);
         assertThat(participant.getSettledAt()).isNotNull();
         assertThat(result.participants()).hasSize(1);
+        verify(collaborationEventService).record(
+                eq(1L), eq(3L), eq("EXPENSE_SETTLED"), eq("EXPENSE"), eq(10L),
+                anyString(), anyMap(), any(), anyString());
     }
 
     @Test
@@ -164,6 +171,9 @@ class ExpenseServiceTest {
         assertThat(result.participants()).extracting("status")
                 .containsExactlyInAnyOrder(
                         ParticipantSettlementStatus.COMPLETED, ParticipantSettlementStatus.PENDING);
+        verify(collaborationEventService).record(
+                eq(1L), eq(2L), eq("EXPENSE_UPDATED"), eq("EXPENSE"), eq(10L),
+                anyString(), anyMap(), any(), anyString());
     }
 
     @Test

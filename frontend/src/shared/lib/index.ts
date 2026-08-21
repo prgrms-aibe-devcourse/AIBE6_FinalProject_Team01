@@ -15,6 +15,7 @@ export { useAppTheme } from './use-app-theme'
 export {
     REALTIME_EVENT_NAME,
     isAccountSuspendedEvent,
+    isExpenseRealtimeEvent,
     isTripRealtimeEvent,
     parseRealtimeMessage,
     shouldDispatchNotificationToTrip,

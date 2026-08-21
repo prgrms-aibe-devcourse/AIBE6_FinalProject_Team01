@@ -12,6 +12,7 @@ type Props = {
     places: Place[]
     itineraryDays: ItineraryDay[]
     tripId: number
+    expenseRealtimeVersion?: number
     canManage: boolean
     guestView?: boolean
     onJoin?: () => void
@@ -26,6 +27,7 @@ export function RecordRoomPanel({
     places,
     itineraryDays,
     tripId,
+    expenseRealtimeVersion = 0,
     canManage,
     guestView = false,
     onJoin,
@@ -78,7 +80,7 @@ export function RecordRoomPanel({
                     setEditingExpense(expense)
                     setExpenseComposerOpen(true)
                 }}
-                expenseRevision={expenseRevision}
+                expenseRevision={expenseRevision + expenseRealtimeVersion}
             />
 
             {expenseComposerOpen &&
