@@ -27,6 +27,7 @@ export type {
     TripVisibilitySettings,
 } from './api/trip-api'
 export { CreateTripModal } from './ui/create-trip-modal'
+export { getTripCopyDefaults } from './model/trip-copy-defaults'
 export { ManageTripModal } from './ui/manage-trip-modal'
 export { TripVisibilityModal } from './ui/trip-visibility-modal'
 export { PublicScopeOptions, PublicScopeModal } from './ui/public-scope-options'

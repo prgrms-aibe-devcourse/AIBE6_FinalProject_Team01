@@ -4,7 +4,10 @@ import {
     copyCardItinerary,
     type PublicCard,
 } from '@/features/explore-card'
-import { CreateTripModal } from '@/features/manage-trip'
+import {
+    CreateTripModal,
+    getTripCopyDefaults,
+} from '@/features/manage-trip'
 
 export function ItineraryCopyFlow({
     card,
@@ -19,6 +22,7 @@ export function ItineraryCopyFlow({
     const [loading, setLoading] = useState(false)
     const [copyError, setCopyError] = useState<string | null>(null)
     const [copiedTripId, setCopiedTripId] = useState<number | null>(null)
+    const defaults = getTripCopyDefaults(card)
 
     async function copy(targetTripId: number) {
         setLoading(true)
@@ -103,6 +107,8 @@ export function ItineraryCopyFlow({
                     onClose={() => setCreateOpen(false)}
                     requireDates
                     inviteAfterCreate={false}
+                    initialTitle={defaults.title}
+                    initialDestinationName={defaults.destinationName}
                     initialDestination={
                         card.destination != null &&
                         card.destinationLat != null &&

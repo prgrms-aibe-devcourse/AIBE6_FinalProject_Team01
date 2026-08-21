@@ -32,6 +32,8 @@ type Props = {
     requireDates?: boolean
     inviteAfterCreate?: boolean
     initialDestination?: DestinationResult | null
+    initialDestinationName?: string | null
+    initialTitle?: string
 }
 
 export function CreateTripModal({
@@ -40,11 +42,13 @@ export function CreateTripModal({
     requireDates = false,
     inviteAfterCreate = true,
     initialDestination = null,
+    initialDestinationName = null,
+    initialTitle = '',
 }: Props) {
-    const [title, setTitle] = useState('')
+    const [title, setTitle] = useState(initialTitle)
     const [travelStyles, setTravelStyles] = useState<TravelStyle[]>([])
     const [destinationText, setDestinationText] = useState(
-        initialDestination?.name ?? '',
+        initialDestination?.name ?? initialDestinationName ?? '',
     )
     const [destinationResult, setDestinationResult] =
         useState<DestinationResult | null>(initialDestination)
@@ -91,7 +95,10 @@ export function CreateTripModal({
             setError('여행방 이름을 입력해 주세요.')
             return
         }
-        if (!destinationResult) {
+        const normalizedDestinationText = destinationText.trim()
+        const canUseInitialDestinationName =
+            initialDestinationName?.trim() === normalizedDestinationText
+        if (!destinationResult && !canUseInitialDestinationName) {
             setError('목적지를 검색한 뒤 목록에서 선택해 주세요.')
             return
         }
@@ -126,11 +133,14 @@ export function CreateTripModal({
                     await createTrip({
                         title: normalizedTitle,
                         travelStyles,
-                        destination: destinationResult.name,
-                        destinationLat: destinationResult.lat,
-                        destinationLng: destinationResult.lng,
-                        destinationEnglishName: destinationResult.englishName,
-                        destinationCountryCode: destinationResult.countryCode,
+                        destination:
+                            destinationResult?.name ?? normalizedDestinationText,
+                        destinationLat: destinationResult?.lat ?? null,
+                        destinationLng: destinationResult?.lng ?? null,
+                        destinationEnglishName:
+                            destinationResult?.englishName ?? null,
+                        destinationCountryCode:
+                            destinationResult?.countryCode ?? null,
                         startDate: startDate || null,
                         endDate: endDate || null,
                     })
