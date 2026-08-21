@@ -144,3 +144,21 @@ test('t10 공통으로 가능한 연속 날짜는 하루씩 나누지 않고 하
         },
     ])
 })
+
+test('t11 과거 가능 날짜는 추천 여행 기간에서 제외한다', () => {
+    const availability = new Map([
+        ['2026-08-20', [{ memberId: 1 }]],
+        ['2026-08-22', [{ memberId: 1 }]],
+    ])
+
+    assert.deepEqual(
+        recommendDateRanges(availability, 1, '2026-08-21'),
+        [
+            {
+                startDate: '2026-08-22',
+                endDate: '2026-08-22',
+                availableCount: 1,
+            },
+        ],
+    )
+})

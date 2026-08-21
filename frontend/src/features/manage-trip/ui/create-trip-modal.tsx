@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { XIcon } from 'lucide-react'
 import { errorMessage } from '@/shared/lib'
+import { globalModal } from '@/shared/model'
 import {
     createTrip,
     fetchTripCoverImagePresets,
@@ -25,6 +26,7 @@ import { TripEmailInvitationStep } from './trip-email-invitation-step'
 import { MAX_TRAVEL_STYLE_COUNT } from '../model/travel-style-policy'
 import { TravelStyleSelector } from './travel-style-selector'
 import { TripDateFields } from './trip-date-fields'
+import { isPastTripDate, localDateToday } from '../model/trip-date-policy'
 
 type Props = {
     onClose: () => void
@@ -64,6 +66,7 @@ export function CreateTripModal({
     const [coverImage, setCoverImage] = useState<File | null>(null)
     const [createdTripId, setCreatedTripId] = useState<number | null>(null)
     const [showInvitationStep, setShowInvitationStep] = useState(false)
+    const minimumDate = localDateToday()
 
     useEffect(() => {
         fetchTripCoverImagePresets()
@@ -110,6 +113,22 @@ export function CreateTripModal({
         }
         if ((startDate && !endDate) || (!startDate && endDate)) {
             setError('여행 시작일과 종료일을 함께 입력해 주세요.')
+            return
+        }
+        if (isPastTripDate(startDate, minimumDate)) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 시작일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
+            return
+        }
+        if (isPastTripDate(endDate, minimumDate)) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 종료일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
             return
         }
         if (requireDates && (!startDate || !endDate)) {
@@ -175,6 +194,7 @@ export function CreateTripModal({
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-4">
             <form
+                noValidate
                 onSubmit={submit}
                 className="mp-scroll max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl md:overflow-visible"
             >
@@ -257,6 +277,7 @@ export function CreateTripModal({
                             endDate={endDate}
                             onStartDateChange={setStartDate}
                             onEndDateChange={setEndDate}
+                            minimumDate={minimumDate}
                         />
 
                         {error && (

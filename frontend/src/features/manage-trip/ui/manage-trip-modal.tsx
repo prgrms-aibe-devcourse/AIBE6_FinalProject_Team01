@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { LogOutIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { errorMessage } from '@/shared/lib'
+import { globalModal } from '@/shared/model'
 import {
     deleteTrip,
     leaveTrip,
@@ -17,6 +18,7 @@ import {
 import { MAX_TRAVEL_STYLE_COUNT } from '../model/travel-style-policy'
 import { TravelStyleSelector } from './travel-style-selector'
 import { TripDateFields } from './trip-date-fields'
+import { isPastTripDate, localDateToday } from '../model/trip-date-policy'
 
 type Props = {
     trip: TripResponse
@@ -38,6 +40,7 @@ export function ManageTripModal({ trip, onClose, onChanged }: Props) {
     const [error, setError] = useState<string | null>(null)
     const [busy, setBusy] = useState(false)
     const [coverImage, setCoverImage] = useState<File | null>(null)
+    const minimumDate = localDateToday()
     function toggleStyle(style: TravelStyle) {
         setStyles((current) => {
             if (current.includes(style)) {
@@ -61,6 +64,28 @@ export function ManageTripModal({ trip, onClose, onChanged }: Props) {
         }
         if ((startDate && !endDate) || (!startDate && endDate)) {
             setError('여행 기간을 함께 입력해 주세요.')
+            return false
+        }
+        if (
+            isPastTripDate(startDate, minimumDate) &&
+            startDate !== (trip.startDate ?? '')
+        ) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 시작일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
+            return false
+        }
+        if (
+            isPastTripDate(endDate, minimumDate) &&
+            endDate !== (trip.endDate ?? '')
+        ) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 종료일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
             return false
         }
         if (startDate && endDate < startDate) {
@@ -144,6 +169,7 @@ export function ManageTripModal({ trip, onClose, onChanged }: Props) {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-4">
             <form
+                noValidate
                 onSubmit={save}
                 className="mp-scroll max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl md:overflow-visible"
             >
@@ -250,6 +276,7 @@ export function ManageTripModal({ trip, onClose, onChanged }: Props) {
                             endDate={endDate}
                             onStartDateChange={setStartDate}
                             onEndDateChange={setEndDate}
+                            minimumDate={minimumDate}
                         />
                         {error && (
                             <p className="mt-3 text-sm font-semibold text-red-500">
