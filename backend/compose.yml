@@ -72,12 +72,47 @@ services:
     networks:
       - plamingo-network
 
+  loki:
+    image: grafana/loki:${LOKI_VERSION:-3.5.1}
+    container_name: plamingo-loki
+    restart: unless-stopped
+    command:
+      - -config.file=/etc/loki/loki-config.yml
+    ports:
+      - "127.0.0.1:${LOKI_PORT:-3100}:3100"
+    volumes:
+      - ../performance/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/loki
+    networks:
+      - plamingo-network
+
+  alloy:
+    image: grafana/alloy:${ALLOY_VERSION:-v1.10.0}
+    container_name: plamingo-alloy
+    restart: unless-stopped
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    depends_on:
+      - loki
+    ports:
+      - "127.0.0.1:${ALLOY_PORT:-12345}:12345"
+    volumes:
+      - ../performance/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - ./build/performance-logs:/var/log/plamingo:ro
+      - alloy-data:/var/lib/alloy/data
+    networks:
+      - plamingo-network
+
   grafana:
     image: grafana/grafana:11.4.0
     container_name: plamingo-grafana
     restart: unless-stopped
     depends_on:
       - prometheus
+      - loki
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
@@ -101,6 +136,8 @@ volumes:
   redis-data:
   prometheus-data:
   grafana-data:
+  loki-data:
+  alloy-data:
 
 networks:
   plamingo-network:
