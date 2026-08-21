@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { XIcon } from 'lucide-react'
 import { errorMessage } from '@/shared/lib'
+import { globalModal } from '@/shared/model'
 import {
     createTrip,
     fetchTripCoverImagePresets,
@@ -25,12 +26,16 @@ import { TripEmailInvitationStep } from './trip-email-invitation-step'
 import { MAX_TRAVEL_STYLE_COUNT } from '../model/travel-style-policy'
 import { TravelStyleSelector } from './travel-style-selector'
 import { TripDateFields } from './trip-date-fields'
+import { isPastTripDate, localDateToday } from '../model/trip-date-policy'
 
 type Props = {
     onClose: () => void
     onCreated: (tripId: number) => void
     requireDates?: boolean
     inviteAfterCreate?: boolean
+    initialDestination?: DestinationResult | null
+    initialDestinationName?: string | null
+    initialTitle?: string
 }
 
 export function CreateTripModal({
@@ -38,12 +43,17 @@ export function CreateTripModal({
     onCreated,
     requireDates = false,
     inviteAfterCreate = true,
+    initialDestination = null,
+    initialDestinationName = null,
+    initialTitle = '',
 }: Props) {
-    const [title, setTitle] = useState('')
+    const [title, setTitle] = useState(initialTitle)
     const [travelStyles, setTravelStyles] = useState<TravelStyle[]>([])
-    const [destinationText, setDestinationText] = useState('')
+    const [destinationText, setDestinationText] = useState(
+        initialDestination?.name ?? initialDestinationName ?? '',
+    )
     const [destinationResult, setDestinationResult] =
-        useState<DestinationResult | null>(null)
+        useState<DestinationResult | null>(initialDestination)
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -56,6 +66,7 @@ export function CreateTripModal({
     const [coverImage, setCoverImage] = useState<File | null>(null)
     const [createdTripId, setCreatedTripId] = useState<number | null>(null)
     const [showInvitationStep, setShowInvitationStep] = useState(false)
+    const minimumDate = localDateToday()
 
     useEffect(() => {
         fetchTripCoverImagePresets()
@@ -87,7 +98,10 @@ export function CreateTripModal({
             setError('여행방 이름을 입력해 주세요.')
             return
         }
-        if (!destinationResult) {
+        const normalizedDestinationText = destinationText.trim()
+        const canUseInitialDestinationName =
+            initialDestinationName?.trim() === normalizedDestinationText
+        if (!destinationResult && !canUseInitialDestinationName) {
             setError('목적지를 검색한 뒤 목록에서 선택해 주세요.')
             return
         }
@@ -99,6 +113,22 @@ export function CreateTripModal({
         }
         if ((startDate && !endDate) || (!startDate && endDate)) {
             setError('여행 시작일과 종료일을 함께 입력해 주세요.')
+            return
+        }
+        if (isPastTripDate(startDate, minimumDate)) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 시작일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
+            return
+        }
+        if (isPastTripDate(endDate, minimumDate)) {
+            globalModal.open({
+                title: '지난 날짜는 선택할 수 없습니다.',
+                description: '여행 종료일을 오늘 이후로 선택해 주세요.',
+                confirmText: '확인',
+            })
             return
         }
         if (requireDates && (!startDate || !endDate)) {
@@ -122,11 +152,14 @@ export function CreateTripModal({
                     await createTrip({
                         title: normalizedTitle,
                         travelStyles,
-                        destination: destinationResult.name,
-                        destinationLat: destinationResult.lat,
-                        destinationLng: destinationResult.lng,
-                        destinationEnglishName: destinationResult.englishName,
-                        destinationCountryCode: destinationResult.countryCode,
+                        destination:
+                            destinationResult?.name ?? normalizedDestinationText,
+                        destinationLat: destinationResult?.lat ?? null,
+                        destinationLng: destinationResult?.lng ?? null,
+                        destinationEnglishName:
+                            destinationResult?.englishName ?? null,
+                        destinationCountryCode:
+                            destinationResult?.countryCode ?? null,
                         startDate: startDate || null,
                         endDate: endDate || null,
                     })
@@ -161,6 +194,7 @@ export function CreateTripModal({
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-4">
             <form
+                noValidate
                 onSubmit={submit}
                 className="mp-scroll max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl md:overflow-visible"
             >
@@ -243,6 +277,7 @@ export function CreateTripModal({
                             endDate={endDate}
                             onStartDateChange={setStartDate}
                             onEndDateChange={setEndDate}
+                            minimumDate={minimumDate}
                         />
 
                         {error && (

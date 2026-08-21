@@ -73,8 +73,11 @@ export function dateRange(startDate: string, endDate: string) {
 export function recommendDateRanges(
     availabilityByDate: Map<string, DateAvailability[]>,
     memberCount: number,
+    minimumDate?: string,
 ): DateRecommendation[] {
-    const availableDates = Array.from(availabilityByDate.keys()).sort()
+    const availableDates = Array.from(availabilityByDate.keys())
+        .filter((date) => minimumDate == null || date >= minimumDate)
+        .sort()
     if (availableDates.length === 0 || memberCount === 0) return []
 
     const firstDate = parseLocalDate(availableDates[0])

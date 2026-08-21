@@ -237,6 +237,8 @@ public class PublicCardService {
                 card.getId(), card.getTripId(), card.getCreatedBy(),
                 context.nicknames().getOrDefault(card.getCreatedBy(), "알 수 없음"),
                 card.getTitle(), card.getSummary(), trip.getDestination(),
+                trip.getDestinationLat(), trip.getDestinationLng(),
+                trip.getDestinationEnglishName(), trip.getDestinationCountryCode(),
                 card.getCoverImageUrl() != null ? card.getCoverImageUrl() : trip.getCoverImageUrl(),
                 trip.getTravelStyles(),
                 context.tagNamesByCard().getOrDefault(card.getId(), List.of()),

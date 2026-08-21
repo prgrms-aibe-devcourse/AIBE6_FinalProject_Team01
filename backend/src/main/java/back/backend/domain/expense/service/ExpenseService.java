@@ -76,7 +76,7 @@ public class ExpenseService {
 
     @Transactional
     public ExpenseResponse update(Long tripId, Long expenseId, ExpenseUpdateRequest request) {
-        accessChecker.requireRecordEdit(tripId);
+        Long actorId = accessChecker.requireRecordEdit(tripId);
         Trip trip = findTrip(tripId);
         Expense expense = findExpense(tripId, expenseId);
         validateExpenseDate(trip, request.expenseDate());
@@ -93,6 +93,11 @@ public class ExpenseService {
                 request.expenseDate(), request.payerId(), request.splitType(), request.memo());
         participantRepository.deleteAllByExpenseId(expenseId);
         List<ExpenseParticipant> savedParticipants = saveParticipants(expenseId, request.payerId(), shares);
+        collaborationEventService.record(
+                tripId, actorId, "EXPENSE_UPDATED", "EXPENSE", expenseId,
+                expense.getTitle() + " 지출 내역이 수정됐습니다.",
+                Map.of("title", expense.getTitle(), "amount", expense.getTotalAmount()),
+                NotificationType.SETTLEMENT, "지출 수정");
         return toResponse(expense, savedParticipants, trip, memberNames(tripMemberIds));
     }
 
@@ -175,6 +180,11 @@ public class ExpenseService {
         participant.markSettled();
         participantRepository.save(participant);
         List<ExpenseParticipant> participants = participantRepository.findAllByExpenseId(expenseId);
+        collaborationEventService.record(
+                tripId, actorId, "EXPENSE_SETTLED", "EXPENSE", expenseId,
+                expense.getTitle() + " 지출의 정산 상태가 변경됐습니다.",
+                Map.of("memberId", memberId),
+                NotificationType.SETTLEMENT, "정산 완료");
         return toResponse(expense, participants, trip, memberNames(tripMemberRepository.findMemberIdsByTripId(tripId)));
     }
 

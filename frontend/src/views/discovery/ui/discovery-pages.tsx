@@ -34,7 +34,7 @@ import {
     useExploreCardStore,
 } from '@/features/explore-card'
 import { REALTIME_EVENT_NAME, type RealtimeEvent } from '@/shared/lib'
-import { CreateTripModal } from '@/features/manage-trip'
+import { CreateTripModal, getTripCopyDefaults } from '@/features/manage-trip'
 import { resolveMediaUrl } from '@/shared/api/client'
 import { KanbanMapPanel } from '@/widgets/trip-room'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -1493,6 +1493,7 @@ function ItineraryCopyFlow({
     const [loading, setLoading] = useState(false)
     const [copyError, setCopyError] = useState<string | null>(null)
     const [copiedTripId, setCopiedTripId] = useState<number | null>(null)
+    const defaults = getTripCopyDefaults(card)
 
     async function copy(targetTripId: number) {
         setLoading(true)
@@ -1571,6 +1572,23 @@ function ItineraryCopyFlow({
                     onClose={() => setCreateOpen(false)}
                     requireDates
                     inviteAfterCreate={false}
+                    initialTitle={defaults.title}
+                    initialDestinationName={defaults.destinationName}
+                    initialDestination={
+                        card.destination != null &&
+                        card.destinationLat != null &&
+                        card.destinationLng != null
+                            ? {
+                                  name: card.destination,
+                                  englishName:
+                                      card.destinationEnglishName ??
+                                      card.destination,
+                                  countryCode: card.destinationCountryCode,
+                                  lat: card.destinationLat,
+                                  lng: card.destinationLng,
+                              }
+                            : null
+                    }
                     onCreated={(tripId) => {
                         setCreateOpen(false)
                         void copy(tripId)
