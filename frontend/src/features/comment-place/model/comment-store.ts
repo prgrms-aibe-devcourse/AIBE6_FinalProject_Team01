@@ -21,10 +21,13 @@ export const useCommentStore = create<CommentStore>((set) => ({
         set((state) => ({
             commentsByPlaceId: {
                 ...state.commentsByPlaceId,
-                [placeId]: [
-                    ...(state.commentsByPlaceId[placeId] ?? []),
-                    comment,
-                ],
+                [placeId]: (state.commentsByPlaceId[placeId] ?? []).some(
+                    (existing) => existing.id === comment.id,
+                )
+                    ? (state.commentsByPlaceId[placeId] ?? []).map((existing) =>
+                          existing.id === comment.id ? comment : existing,
+                      )
+                    : [...(state.commentsByPlaceId[placeId] ?? []), comment],
             },
         })),
     removeComment: (placeId, commentId) =>
