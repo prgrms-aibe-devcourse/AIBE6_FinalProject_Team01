@@ -58,7 +58,7 @@ server:
       prefix: access
       suffix: .log
       rotate: true
-      pattern: '%t method=%m path=%U query=%q status=%s duration_us=%D bytes=%b'
+      pattern: '%t method=%m path=%U status=%s duration_us=%D bytes=%b'
 
 app:
   performance:
