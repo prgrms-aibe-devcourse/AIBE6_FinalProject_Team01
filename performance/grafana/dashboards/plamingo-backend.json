@@ -1,6 +1,6 @@
 {
-  "uid": "plamingo-backend",
-  "title": "Plamingo Backend",
+  "uid": "plamingo-backend-legacy",
+  "title": "Plamingo Backend (기존)",
   "description": "API, HikariCP, Tomcat, CPU, GC를 같은 시간축에서 비교하는 성능 병목 분석 대시보드",
   "tags": ["plamingo", "performance", "bottleneck"],
   "timezone": "browser",
