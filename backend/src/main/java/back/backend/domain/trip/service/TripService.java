@@ -30,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,8 +92,19 @@ public class TripService {
     }
 
     public List<TripResponse> getMyTrips(Long memberId) {
-        return tripRepository.findAllAccessibleByMemberIdAndStatusNot(memberId, TripStatus.CANCELLED).stream()
-                .map(this::toResponse)
+        List<Trip> trips = tripRepository.findAllAccessibleByMemberIdAndStatusNot(
+                memberId, TripStatus.CANCELLED);
+        if (trips.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Long> memberCounts = tripMemberRepository.countAllByTripIds(
+                        trips.stream().map(Trip::getId).toList()).stream()
+                .collect(Collectors.toMap(
+                        TripMemberRepository.TripMemberCount::getTripId,
+                        TripMemberRepository.TripMemberCount::getMemberCount));
+        return trips.stream()
+                .map(trip -> TripResponse.from(
+                        trip, memberCounts.getOrDefault(trip.getId(), 0L)))
                 .toList();
     }
 

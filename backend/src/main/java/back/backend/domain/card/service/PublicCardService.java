@@ -92,11 +92,23 @@ public class PublicCardService {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 50);
         String keyword = query == null ? "" : query.trim().toLowerCase();
+        CardSort effectiveSort = sort == null ? CardSort.LATEST : sort;
+        if (effectiveSort == CardSort.LATEST && keyword.isEmpty() && travelStyle == null) {
+            Page<PlanCard> cardPage = cardRepository
+                    .findAllByVisibilityNotOrderByCreatedAtDesc(
+                            TripVisibility.PRIVATE, PageRequest.of(safePage, safeSize));
+            return new PublicCardPageResponse(
+                    toResponses(cardPage.getContent(), memberId),
+                    safePage,
+                    safeSize,
+                    cardPage.getTotalElements(),
+                    cardPage.getTotalPages());
+        }
         List<PublicCardResponse> cards = toResponses(
                 cardRepository.findAllByVisibilityNot(TripVisibility.PRIVATE), memberId).stream()
                 .filter(card -> travelStyle == null || card.travelStyles().contains(travelStyle))
                 .filter(card -> keyword.isEmpty() || matches(card, keyword))
-                .sorted(comparator(sort))
+                .sorted(comparator(effectiveSort))
                 .toList();
         int from = Math.min(safePage * safeSize, cards.size());
         int to = Math.min(from + safeSize, cards.size());
