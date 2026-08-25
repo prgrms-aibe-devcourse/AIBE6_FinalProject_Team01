@@ -44,4 +44,21 @@ class MonitoringProfileConfigurationTest {
         assertThat(source.getProperty("spring.datasource.hikari.connection-timeout"))
                 .isEqualTo("${HIKARI_CONNECTION_TIMEOUT_MS:3000}");
     }
+
+    @Test
+    @DisplayName("t3 로컬 프로필도 환경변수 기반 Hikari 풀 설정을 제공한다")
+    void t3_localProfileProvidesConfigurableHikariPool() throws IOException {
+        var sources = new YamlPropertySourceLoader().load(
+                "application-local",
+                new ClassPathResource("application-local.yml")
+        );
+        PropertySource<?> source = sources.getFirst();
+
+        assertThat(source.getProperty("spring.datasource.hikari.maximum-pool-size"))
+                .isEqualTo("${HIKARI_MAXIMUM_POOL_SIZE:20}");
+        assertThat(source.getProperty("spring.datasource.hikari.minimum-idle"))
+                .isEqualTo("${HIKARI_MINIMUM_IDLE:10}");
+        assertThat(source.getProperty("spring.datasource.hikari.connection-timeout"))
+                .isEqualTo("${HIKARI_CONNECTION_TIMEOUT_MS:3000}");
+    }
 }
