@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +92,9 @@ class PublicCardServiceTest {
         ReflectionTestUtils.setField(trip, "destinationLng", 126.9780);
         ReflectionTestUtils.setField(trip, "destinationEnglishName", "Seoul");
         ReflectionTestUtils.setField(trip, "destinationCountryCode", "KR");
-        when(cardRepository.findAllByVisibilityNot(TripVisibility.PRIVATE)).thenReturn(List.of(card));
+        when(cardRepository.findAllByVisibilityNotOrderByCreatedAtDesc(
+                org.mockito.ArgumentMatchers.eq(TripVisibility.PRIVATE), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(card)));
         when(tripRepository.findAllById(List.of(10L))).thenReturn(List.of(trip));
         when(memberRepository.findAllById(List.of(1L))).thenReturn(List.of());
         when(cardTagRepository.findAllByPlanCardIdIn(List.of(20L))).thenReturn(List.of());
@@ -189,5 +192,31 @@ class PublicCardServiceTest {
         assertThat(response.content()).hasSize(1);
         then(commentRepository).should(never())
                 .findAllByPlanCardIdOrderByCreatedAtAsc(20L);
+    }
+
+    @Test
+    @DisplayName("t8 최신 공개 카드 기본 조회는 데이터베이스 페이지네이션을 사용한다")
+    void t8_latestPublicCardsUseDatabasePagination() {
+        PlanCard card = PlanCard.create(10L, "제주 여행", TripVisibility.PUBLIC_ROUTE, 1L);
+        ReflectionTestUtils.setField(card, "id", 20L);
+        Trip trip = Trip.create(1L, "제주 여행", null, Set.of(TravelStyle.FOOD), "제주", null, null);
+        ReflectionTestUtils.setField(trip, "id", 10L);
+        Pageable pageable = PageRequest.of(0, 9);
+        when(cardRepository.findAllByVisibilityNotOrderByCreatedAtDesc(
+                TripVisibility.PRIVATE, pageable))
+                .thenReturn(new PageImpl<>(List.of(card), pageable, 30));
+        when(tripRepository.findAllById(List.of(10L))).thenReturn(List.of(trip));
+        when(memberRepository.findAllById(List.of(1L))).thenReturn(List.of());
+        when(cardTagRepository.findAllByPlanCardIdIn(List.of(20L))).thenReturn(List.of());
+        PublicCardService service = new PublicCardService(
+                cardRepository, savedRepository, commentRepository, cardTagRepository,
+                tagRepository, tripRepository, tripMemberRepository, memberRepository, eventPublisher,
+                shareRepository);
+
+        var response = service.getPublicCards(2L, 0, 9, CardSort.LATEST, "");
+
+        assertThat(response.content()).hasSize(1);
+        assertThat(response.totalElements()).isEqualTo(30);
+        then(cardRepository).should(never()).findAllByVisibilityNot(TripVisibility.PRIVATE);
     }
 }

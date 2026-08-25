@@ -90,11 +90,21 @@ class TripServiceTest {
     @Test
     @DisplayName("t2 회원이 본인 여행방 목록을 조회하면 생성 역순 결과를 반환한다")
     void t2_getMyTripsReturnsOwnedTrips() {
+        Trip first = trip("제주 여행");
+        Trip second = trip("부산 여행");
+        ReflectionTestUtils.setField(first, "id", 10L);
+        ReflectionTestUtils.setField(second, "id", 20L);
         when(tripRepository.findAllAccessibleByMemberIdAndStatusNot(1L, TripStatus.CANCELLED))
-                .thenReturn(List.of(trip("제주 여행"), trip("부산 여행")));
+                .thenReturn(List.of(first, second));
+        when(tripMemberRepository.countAllByTripIds(List.of(10L, 20L)))
+                .thenReturn(List.of(tripCount(10L, 2L), tripCount(20L, 3L)));
 
-        assertThat(tripService.getMyTrips(1L)).extracting("title")
-                .containsExactly("제주 여행", "부산 여행");
+        assertThat(tripService.getMyTrips(1L))
+                .extracting("title", "memberCount")
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("제주 여행", 2L),
+                        org.assertj.core.groups.Tuple.tuple("부산 여행", 3L));
+        verify(tripMemberRepository, never()).countByTripId(any());
     }
 
     @Test
@@ -404,5 +414,19 @@ class TripServiceTest {
 
     private Trip trip(String title) {
         return Trip.create(1L, title, null, Set.of(), null, null, null);
+    }
+
+    private TripMemberRepository.TripMemberCount tripCount(Long tripId, long memberCount) {
+        return new TripMemberRepository.TripMemberCount() {
+            @Override
+            public Long getTripId() {
+                return tripId;
+            }
+
+            @Override
+            public long getMemberCount() {
+                return memberCount;
+            }
+        };
     }
 }
