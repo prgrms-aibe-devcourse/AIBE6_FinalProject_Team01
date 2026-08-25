@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1620" height="1620" viewBox="0 0 1620 1620">
+  <defs>
+    <clipPath id="card-clip"><rect width="800" height="580" rx="18"/></clipPath>
+  </defs>
+  <rect width="1620" height="1620" fill="#0d1117"/>
+
+  <g transform="translate(0 0)" clip-path="url(#card-clip)">
+    <rect width="800" height="580" rx="18" fill="#ffffff"/>
+    <rect x="0" y="0" width="800" height="60" fill="#f6f8fa"/>
+    <text x="28" y="39" font-family="Apple SD Gothic Neo, sans-serif" font-size="23" font-weight="700" fill="#24292f">📍 장소 검색과 자동 분류</text>
+    <line x1="24" y1="60" x2="776" y2="60" stroke="#d0d7de" stroke-width="2"/>
+    <image x="0" y="60" width="800" height="520" preserveAspectRatio="xMidYMid meet" xlink:href="../../frontend/public/assets/landing-place-search-preview.png"/>
+  </g>
+
+  <g transform="translate(820 0)" clip-path="url(#card-clip)">
+    <rect width="800" height="580" rx="18" fill="#ffffff"/>
+    <rect x="0" y="0" width="800" height="60" fill="#f6f8fa"/>
+    <text x="28" y="39" font-family="Apple SD Gothic Neo, sans-serif" font-size="23" font-weight="700" fill="#24292f">🗳️ 투표와 날짜 조율</text>
+    <line x1="24" y1="60" x2="776" y2="60" stroke="#d0d7de" stroke-width="2"/>
+    <image x="0" y="60" width="800" height="520" preserveAspectRatio="xMidYMid meet" xlink:href="../../frontend/public/assets/landing-vote-preview.png"/>
+  </g>
+
+  <g transform="translate(0 600)" clip-path="url(#card-clip)">
+    <rect width="800" height="580" rx="18" fill="#ffffff"/>
+    <rect x="0" y="0" width="800" height="60" fill="#f6f8fa"/>
+    <text x="28" y="39" font-family="Apple SD Gothic Neo, sans-serif" font-size="23" font-weight="700" fill="#24292f">🧭 Day 배치와 동선 생성</text>
+    <line x1="24" y1="60" x2="776" y2="60" stroke="#d0d7de" stroke-width="2"/>
+    <image x="0" y="60" width="800" height="520" preserveAspectRatio="xMidYMid meet" xlink:href="../../frontend/public/assets/landing-route-preview.png"/>
+  </g>
+
+  <g transform="translate(820 600)" clip-path="url(#card-clip)">
+    <rect width="800" height="580" rx="18" fill="#ffffff"/>
+    <rect x="0" y="0" width="800" height="60" fill="#f6f8fa"/>
+    <text x="28" y="39" font-family="Apple SD Gothic Neo, sans-serif" font-size="23" font-weight="700" fill="#24292f">💰 정산과 여행 기록</text>
+    <line x1="24" y1="60" x2="776" y2="60" stroke="#d0d7de" stroke-width="2"/>
+    <image x="0" y="60" width="800" height="520" preserveAspectRatio="xMidYMid meet" xlink:href="../../frontend/public/assets/landing-expense-preview.png"/>
+  </g>
+</svg>
