@@ -427,10 +427,8 @@ SPRING_PROFILES_ACTIVE=local,performance ./gradlew bootRun
   </tr>
 </table>
 
-<p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
-
 ---
 
 <div align="center">
