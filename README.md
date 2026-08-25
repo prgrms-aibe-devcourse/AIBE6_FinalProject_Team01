@@ -415,20 +415,29 @@ SPRING_PROFILES_ACTIVE=local,performance ./gradlew bootRun
 
 <table align="center">
   <tr>
-    <td align="center" width="220">
-      <a href="https://github.com/0-0v"><img width="120" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" /></a><br/>
-      <b><a href="https://github.com/0-0v">@0-0v</a></b><br/>
-      <sub>Frontend / Backend</sub>
-    </td>
-    <td align="center" width="220">
-      <a href="https://github.com/HeungJunBag"><img width="120" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" /></a><br/>
-      <b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/>
-      <sub>Frontend / Backend</sub>
-    </td>
-    <td align="center" width="220">
-      <a href="https://github.com/JuyoungKim1024"><img width="120" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" /></a><br/>
+    <td align="center" width="240">
+      <a href="https://github.com/JuyoungKim1024">
+        <img width="120" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" />
+      </a><br/>
       <b><a href="https://github.com/JuyoungKim1024">@JuyoungKim1024</a></b><br/>
-      <sub>Frontend / Backend</sub>
+      <sub><b>Team Leader</b> / Backend / Frontend</sub><br/>
+      <sub>AI 추천, 실시간 협업, 관리자, 보안, 성능 최적화</sub>
+    </td>
+    <td align="center" width="240">
+      <a href="https://github.com/HeungJunBag">
+        <img width="120" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" />
+      </a><br/>
+      <b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/>
+      <sub>Backend / Frontend</sub><br/>
+      <sub>일정, 동선 알고리즘, Google Maps, 장소 지도</sub>
+    </td>
+    <td align="center" width="240">
+      <a href="https://github.com/0-0v">
+        <img width="120" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" />
+      </a><br/>
+      <b><a href="https://github.com/0-0v">@0-0v</a></b><br/>
+      <sub>Backend / Frontend</sub><br/>
+      <sub>인증, 회원, 초대, 여행 기록, 정산, 공개 서비스</sub>
     </td>
   </tr>
 </table>
