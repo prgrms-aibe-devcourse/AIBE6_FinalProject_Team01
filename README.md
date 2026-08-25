@@ -24,7 +24,7 @@
   </p>
 
   <p>
-    <b>2026.07 — 2026.08</b> · Backend & Frontend 3인 팀 프로젝트
+    <b>2026.07 — 2026.08</b> | Backend & Frontend 3인 팀 프로젝트
   </p>
 
   <p>
@@ -41,7 +41,7 @@
 - [프로젝트 소개](#-프로젝트-소개)
 - [핵심 기능](#-핵심-기능)
 - [시스템 아키텍처](#-시스템-아키텍처)
-- [도메인 구조](#-도메인-구조)
+- [도메인 맵](#-도메인-맵)
 - [기술적 도전과 개선](#-기술적-도전과-개선)
 - [기술 스택](#-기술-스택)
 - [프로젝트 구조](#-프로젝트-구조)
@@ -52,85 +52,62 @@
 
 ## 🦩 프로젝트 소개
 
-> 여행 멤버들이 공유한 장소를 한곳에 모으고, 투표와 날짜 조율로 의견을 좁힌 뒤, 관계·거리·다양성을 고려한 Day별 일정으로 완성하는 공동 여행지도 서비스입니다.
+> 여행 멤버들이 공유한 장소를 한곳에 모으고, 투표와 날짜 조율로 의견을 좁힌 뒤, 관계, 거리, 다양성을 고려한 Day별 일정으로 완성하는 공동 여행지도 서비스입니다.
 
 여행을 준비할 때 장소는 SNS와 지도 앱에서 찾고, 의견은 메신저에서 나누며, 일정은 다시 메모나 스프레드시트로 정리합니다. 정보가 여러 플랫폼에 흩어지면서 결정 과정은 길어지고, 정리 부담은 특정 구성원에게 집중됩니다.
 
 **Plamingo**는 이 단절을 하나의 사용자 흐름으로 연결합니다.
 
 ```text
-장소 탐색·공유 → 분류·투표 → 날짜 조율 → Day 배치·동선 생성 → 경비 정산 → 여행 기록
+장소 탐색, 공유 → 분류, 투표 → 날짜 조율 → Day 배치, 동선 생성 → 경비 정산 → 여행 기록
 ```
 
 ### 우리가 해결하는 문제
 
-| 기존 여행 준비                        | Plamingo                                       |
-| ------------------------------------- | ---------------------------------------------- |
-| 검색·메신저·메모·지도 앱을 반복 이동  | 장소와 의견, 일정을 여행방 한곳에 축적         |
-| 말이 많은 사람이 결정을 주도          | 투표와 가능한 날짜를 근거로 공동 결정          |
-| 장소만 모이고 실제 동선은 수작업      | 관계·거리·다양성을 반영해 Day와 방문 순서 구성 |
-| 여행이 끝나면 사진과 비용 맥락이 분리 | 일정 Day 기준으로 기록과 경비를 함께 보관      |
+| 기존 여행 준비                          | Plamingo                                         |
+| --------------------------------------- | ------------------------------------------------ |
+| 검색, 메신저, 메모, 지도 앱을 반복 이동 | 장소와 의견, 일정을 여행방 한곳에 축적           |
+| 말이 많은 사람이 결정을 주도            | 투표와 가능한 날짜를 근거로 공동 결정            |
+| 장소만 모이고 실제 동선은 수작업        | 관계, 거리, 다양성을 반영해 Day와 방문 순서 구성 |
+| 여행이 끝나면 사진과 비용 맥락이 분리   | 일정 Day 기준으로 기록과 경비를 함께 보관        |
 
 ### 서비스 이용 흐름
 
-| 단계    | 사용자 경험                                 | 구현 기능                                                                   |
-| ------- | ------------------------------------------- | --------------------------------------------------------------------------- |
-| 1. 시작 | 계정을 만들고 여행방을 개설                 | 이메일 인증, Google·Kakao OAuth2, 여행 스타일·동행 유형·커버 이미지 설정    |
-| 2. 초대 | 함께 갈 멤버를 여행방에 초대                | 초대 코드, 이메일 초대, 비회원 게스트 미리보기, 가입 후 초대 권한 연결      |
-| 3. 결정 | 가능한 날짜와 후보 장소에 의견을 모음       | 멤버별 가능일 달력, 여행 기간 제안·과반 확정, 장소 찬반·A/B 투표, 댓글      |
-| 4. 계획 | 확정 장소를 Day별 일정과 실제 동선으로 구성 | 자동 분류, 드래그 앤 드롭, 칸반·타임테이블, Routes 이동시간, AI 추천·재계획 |
-| 5. 여행 | 현장에서 일정과 비용, 기록을 함께 갱신      | 접속 현황, 실시간 동기화, 지출 분담·정산 완료, Day별 사진·메모              |
-| 6. 공유 | 여행을 회고하고 다른 여행자와 경험을 나눔   | 개인 회고, 공개 범위 설정, 여행 카드 탐색·댓글·북마크·일정 복사             |
+| 단계                | 사용자 경험                                 | 구현 기능                                                                     |
+| ------------------- | ------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1.&nbsp;시&#8288;작 | 계정을 만들고 여행방을 개설                 | 이메일 인증, Google, Kakao OAuth2, 여행 스타일, 동행 유형, 커버 이미지 설정   |
+| 2.&nbsp;초&#8288;대 | 함께 갈 멤버를 여행방에 초대                | 초대 코드, 이메일 초대, 비회원 게스트 미리보기, 가입 후 초대 권한 연결        |
+| 3.&nbsp;결&#8288;정 | 가능한 날짜와 후보 장소에 의견을 모음       | 멤버별 가능일 달력, 여행 기간 제안, 과반 확정, 장소 찬반, A/B 투표, 댓글      |
+| 4.&nbsp;계&#8288;획 | 확정 장소를 Day별 일정과 실제 동선으로 구성 | 자동 분류, 드래그 앤 드롭, 칸반, 타임테이블, Routes 이동시간, AI 추천, 재계획 |
+| 5.&nbsp;여&#8288;행 | 현장에서 일정과 비용, 기록을 함께 갱신      | 접속 현황, 실시간 동기화, 지출 분담, 정산 완료, Day별 사진, 메모              |
+| 6.&nbsp;공&#8288;유 | 여행을 회고하고 다른 여행자와 경험을 나눔   | 개인 회고, 공개 범위 설정, 여행 카드 탐색, 댓글, 북마크, 일정 복사            |
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
 ## ✨ 핵심 기능
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>📍 장소 검색과 자동 분류</h3>
-      <p align="center"><img width="96" alt="장소를 모으는 플라밍고" src="frontend/public/assets/plamingo2-place-v2.png" /></p>
-      <img width="100%" alt="장소 검색과 등록" src="frontend/public/assets/landing-place-search-preview.png" />
-      <p>Google Places로 장소를 검색하고 저장합니다. 장소 유형과 이름 규칙을 조합해 여행방 카테고리로 분류하고, 지도 핀과 댓글로 세부 정보를 함께 남깁니다.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🗳️ 투표와 날짜 조율</h3>
-      <p align="center"><img width="96" alt="의견을 모으는 플라밍고" src="frontend/public/assets/plamingo2-vote-v2.png" /></p>
-      <img width="100%" alt="장소 투표" src="frontend/public/assets/landing-vote-preview.png" />
-      <p>단일 장소 찬반 투표와 두 장소 A/B 투표를 지원합니다. 멤버별 가능한 날짜도 모아 모두가 참여할 수 있는 여행 기간을 결정합니다.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🧭 Day 배치와 동선 생성</h3>
-      <p align="center"><img width="96" alt="AI 동선을 추천하는 플라밍고" src="frontend/public/assets/plamingo2-ai-v2.png" /></p>
-      <img width="100%" alt="Day별 여행 동선" src="frontend/public/assets/landing-route-preview.png" />
-      <p>장소 관계도, 거리, 카테고리 다양성, 일정 과밀도를 반영해 장소를 Day별로 배치합니다. Google Routes의 실제 이동 정보를 이용해 방문 순서를 구체화합니다.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>💰 정산과 여행 기록</h3>
-      <p align="center"><img width="96" alt="여행 경비를 정리하는 플라밍고" src="frontend/public/assets/plamingo2-expense-v2.png" /></p>
-      <img width="100%" alt="여행 경비 정산" src="frontend/public/assets/landing-expense-preview.png" />
-      <p>지출 참여자를 기준으로 분담 금액과 정산 상태를 계산합니다. 여행 후에는 Day별 사진, 메모와 회고를 남겨 여행의 맥락을 보존합니다.</p>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img
+    width="94%"
+    alt="Plamingo 핵심 기능: 장소 검색, 투표, Day 동선, 경비 정산"
+    src="docs/images/core-features-grid-v2.png"
+  />
+</p>
 
 ### 구현 기능 한눈에 보기
 
-| 영역         | 주요 기능                                                                                  |
-| ------------ | ------------------------------------------------------------------------------------------ |
-| 여행방       | 생성·수정·삭제·나가기, 여행 상태 관리, 커버 이미지·프리셋, 공개 범위와 완료 확인           |
-| 멤버 협업    | 초대 코드·이메일 초대·게스트 접근, 역할별 권한, 접속 위치·작업 영역 공유, 활동 로그와 알림 |
-| 날짜 결정    | 멤버별 가능한 날짜 저장, 겹치는 날짜 확인, 여행 기간 제안, 찬반 투표와 과반수 자동 확정    |
-| 장소 관리    | Google Places 검색·상세·사진, 카테고리 자동 분류, 지도 핀·장소 댓글, 찬반·A/B 투표         |
-| 일정·동선    | Day 초기화, 일정 추가·수정·삭제·이동·정렬, 출발지·시간·이동수단 설정, 경로 미리보기·적용   |
-| AI 지원      | 여행 조건 기반 장소 후보 추천, 전체 또는 특정 Day 재계획, OpenAI 장애 시 규칙 기반 폴백    |
-| 여행 중·이후 | 동일 분담·직접 분담 지출, 참여자별 정산 상태, 사진 업로드, Day별 기록과 개인 회고          |
-| 여행 탐색    | 공개 일정·기록 검색, 최신·인기·댓글순 정렬, 스타일 필터, 댓글·북마크·여행방 공유·일정 복사 |
-| 계정·보안    | 이메일 가입·비밀번호 재설정, OAuth2, JWT 재발급·로그아웃, 프로필, 로그인 제한, 회원 탈퇴   |
-| 관리자·문의  | 운영 대시보드, 회원 정지·부관리자 관리, 문의 답변, 외부 API 사용량, 커버 프리셋, 감사 로그 |
+| 영역          | 주요 기능                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| 여행방        | 생성, 수정, 삭제, 나가기, 여행 상태 관리, 커버 이미지, 프리셋, 공개 범위와 완료 확인             |
+| 멤버 협업     | 초대 코드, 이메일 초대, 게스트 접근, 역할별 권한, 접속 위치, 작업 영역 공유, 활동 로그와 알림    |
+| 날짜 결정     | 멤버별 가능한 날짜 저장, 겹치는 날짜 확인, 여행 기간 제안, 찬반 투표와 과반수 자동 확정          |
+| 장소 관리     | Google Places 검색, 상세, 사진, 카테고리 자동 분류, 지도 핀, 장소 댓글, 찬반, A/B 투표           |
+| 일정, 동선    | Day 초기화, 일정 추가, 수정, 삭제, 이동, 정렬, 출발지, 시간, 이동수단 설정, 경로 미리보기, 적용  |
+| AI 지원       | 여행 조건 기반 장소 후보 추천, 전체 또는 특정 Day 재계획, OpenAI 장애 시 규칙 기반 폴백          |
+| 여행 중, 이후 | 동일 분담, 직접 분담 지출, 참여자별 정산 상태, 사진 업로드, Day별 기록과 개인 회고               |
+| 여행 탐색     | 공개 일정, 기록 검색, 최신, 인기, 댓글순 정렬, 스타일 필터, 댓글, 북마크, 여행방 공유, 일정 복사 |
+| 계정, 보안    | 이메일 가입, 비밀번호 재설정, OAuth2, JWT 재발급, 로그아웃, 프로필, 로그인 제한, 회원 탈퇴       |
+| 관리자, 문의  | 운영 대시보드, 회원 정지, 부관리자 관리, 문의 답변, 외부 API 사용량, 커버 프리셋, 감사 로그      |
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
@@ -144,126 +121,137 @@
   />
 </p>
 
-### 데이터 흐름
+### 구성 및 요청 흐름
 
-1. Vercel의 Next.js 클라이언트가 REST API와 STOMP WebSocket으로 AWS의 Spring Boot 애플리케이션에 접근합니다.
-2. Nginx Proxy Manager는 헬스체크를 통과한 Blue·Green 슬롯으로 트래픽을 전달하고, GitHub Actions와 AWS SSM이 배포 전환을 자동화합니다.
-3. MySQL은 여행방·일정·정산·기록 같은 영속 데이터를, Redis는 Refresh Token·OTP·로그인 제한·외부 API 호출량 같은 만료성 상태를 관리합니다.
-4. 사진은 Amazon S3에 저장하며 Google Places·Routes, OpenAI, Brevo 연동은 타임아웃·폴백·사용량 추적을 거쳐 호출합니다.
-5. 도메인 변경이 커밋된 후 STOMP 이벤트를 발행해 같은 여행방 화면과 사용자별 알림을 갱신합니다.
-6. Actuator와 k6 지표는 Prometheus에, 애플리케이션·Access Log는 Alloy를 거쳐 Loki에 수집되며 Grafana에서 같은 시간축으로 분석합니다.
+1. 사용자는 Vercel에 배포된 Next.js 화면에 접근하며, SSR/ISR 응답과 클라이언트 화면을 전달받습니다.
+2. 프론트엔드의 API 요청은 AWS EC2의 Nginx Proxy Manager를 거쳐 현재 활성화된 Spring Boot Blue/Green 슬롯으로 전달됩니다. 실시간 협업 이벤트도 같은 진입점을 통해 STOMP WebSocket으로 송수신합니다.
+3. Spring Boot는 MySQL에 여행방, 일정, 정산, 기록을 영속화하고 Redis에서 Refresh Token, OTP, 로그인 제한, 캐시와 외부 API 호출량을 관리합니다. 업로드한 사진과 객체 파일은 Amazon S3에 저장합니다.
+4. 서버는 OpenAI, Google Maps, Google/Kakao OAuth, Brevo SMTP와 연동합니다. 외부 API 요청에는 타임아웃, 장애 폴백과 사용량 추적을 적용합니다.
+5. GitHub에 코드가 반영되면 GitHub Actions가 프론트엔드를 Vercel에 배포합니다. 백엔드는 Docker 이미지를 빌드한 뒤 AWS SSM으로 배포 명령을 전달하고, 헬스체크를 통과한 새 Blue/Green 슬롯으로 트래픽을 전환합니다.
+6. 별도 Load Testing Tier의 k6가 Nginx 진입점에 실제 사용자 흐름 기반 부하를 발생시킵니다. 테스트 프로필에서는 유료 외부 API를 Mock 처리해 과금과 데이터 오염을 방지합니다.
+7. Spring Boot와 k6 지표는 Prometheus에, 애플리케이션 및 Access Log는 Alloy를 통해 Loki에 수집합니다. Grafana는 두 저장소를 조회해 요청 지연, 오류, 시스템 자원과 로그를 같은 시간축으로 분석합니다.
 
 > [!IMPORTANT]
-> 현재 저장소에는 **Prometheus + Grafana + Loki + Alloy** 기반의 로컬 부하테스트 관제 환경이 구현되어 있습니다. 운영환경에 적용할 때는 인증·TLS·영구 스토리지와 별도의 로그 보존 정책이 필요합니다.
+> 아키텍처의 Load Testing Tier와 Observability Tier는 일반 사용자 요청 경로와 분리된 성능 검증 환경입니다. 현재 저장소에는 **k6 + Prometheus + Grafana + Loki + Alloy** 구성이 구현되어 있으며, 운영 적용 시에는 인증, TLS, 영구 스토리지와 별도의 로그 보존 정책이 필요합니다.
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
-## 🗂 도메인 구조
+## 🗺️ 도메인 맵
 
-```mermaid
-erDiagram
-    MEMBER ||--o{ TRIP_MEMBER : participates
-    TRIP ||--o{ TRIP_MEMBER : has
-    TRIP ||--o{ TRIP_PLACE : collects
-    PLACE ||--o{ TRIP_PLACE : referenced_by
-    TRIP_PLACE ||--o{ PLACE_VOTE : evaluated_by
-    TRIP ||--o{ ITINERARY_DAY : plans
-    ITINERARY_DAY ||--o{ ITINERARY_ITEM : contains
-    TRIP_PLACE ||--o| ITINERARY_ITEM : scheduled_as
-    TRIP ||--o{ EXPENSE : records
-    EXPENSE ||--o{ EXPENSE_PARTICIPANT : splits
-    TRIP ||--o{ TRAVEL_RECORD : archives
-    TRIP ||--o| PLAN_CARD : publishes
-```
+<p align="center">
+  <img
+    width="100%"
+    alt="Plamingo 도메인맵"
+    src="docs/images/plamingo-domain-map.png"
+  />
+</p>
 
-- **인증·회원 (`auth`, `member`)**: 이메일·OAuth2 로그인, JWT 수명주기, 프로필, 계정 상태와 개인정보 파기
-- **여행방 (`trip`)**: 여행 생성부터 멤버·게스트 초대, 날짜 조율, 상태·공개 범위·완료 처리까지 관리하는 중심 도메인
-- **장소 (`place`)**: Places 검색, 여행방 장소·카테고리·지도 핀, 댓글, 투표와 장소 관계 점수 관리
-- **일정 (`itinerary`)**: Day와 일정 항목, 이동수단·시간, 순서 변경, 경로 계산과 배치 알고리즘 관리
+Plamingo는 여행방을 중심으로 장소 의사결정, 일정과 동선, 정산, 여행 기록, 공개 카드가 연결됩니다. AI 추천은 검색된 장소 후보와 여행방 정보를 바탕으로 추천 및 재계획 미리보기를 제공하며, 활동 로그, 알림과 STOMP 갱신은 공통 협업 영역에서 지원합니다.
+
+- **인증, 회원 (`auth`, `member`)**: 이메일, OAuth2 로그인, JWT 수명주기, 프로필, 계정 상태와 개인정보 파기
+- **여행방 (`trip`)**: 여행 생성부터 멤버, 게스트 초대, 날짜 조율, 상태, 공개 범위, 완료 처리까지 관리하는 중심 도메인
+- **장소 (`place`)**: Places 검색, 여행방 장소, 카테고리, 지도 핀, 댓글, 투표와 장소 관계 점수 관리
+- **일정 (`itinerary`)**: Day와 일정 항목, 이동수단, 시간, 순서 변경, 경로 계산과 배치 알고리즘 관리
 - **AI 지원 (`agent`)**: 장소 추천과 일정 재계획을 미리보기로 제공하고 사용자가 승인한 결과만 반영
-- **협업 (`collaboration`)**: 도메인 변경을 활동 로그·알림으로 남기고 STOMP 이벤트로 실시간 전달
-- **정산·기록 (`expense`, `travelrecord`)**: 지출 참여자별 분담·완료 상태와 Day별 사진·메모·개인 회고 관리
-- **공개 카드 (`card`)**: 완료된 여행의 공개·검색·댓글·북마크·공유와 다른 여행방으로 일정 복사
-- **운영 (`admin`, `inquiry`)**: 회원·문의·외부 API 사용량·커버 이미지 관리와 모든 관리자 조치 감사 기록
+- **협업 (`collaboration`)**: 도메인 변경을 활동 로그, 알림으로 남기고 STOMP 이벤트로 실시간 전달
+- **정산, 기록 (`expense`, `travelrecord`)**: 지출 참여자별 분담, 완료 상태와 Day별 사진, 메모, 개인 회고 관리
+- **공개 카드 (`card`)**: 완료된 여행의 공개, 검색, 댓글, 북마크, 공유와 다른 여행방으로 일정 복사
+- **운영 (`admin`, `inquiry`)**: 회원, 문의, 외부 API 사용량, 커버 이미지 관리와 모든 관리자 조치 감사 기록
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
 ## 🧩 기술적 도전과 개선
 
-### 1. 설명 가능한 Day 배치 알고리즘
+### 1. 검색 증강(RAG) 패턴으로 생성 범위를 제한한 장소 추천
 
-단순 거리순 정렬은 같은 유형의 장소가 한 Day에 몰리거나 일정이 과밀해지는 문제를 만들었습니다. 이를 해결하기 위해 장소 관계 점수와 실제 배치 점수를 분리했습니다.
+장소 추천에서 LLM이 검색되지 않은 장소를 추가하지 못하도록 **Google Places 검색 결과와 여행방 컨텍스트를 결합한 검색 증강 구조**를 적용했습니다. 벡터 DB와 임베딩을 사용하는 문서 RAG는 아닙니다.
 
 ```text
-장소 관계 점수 = 여행 스타일 유사도 + 공동 방문 이력
-Day 배치 점수 = 관계도 + 거리 + 카테고리 다양성 + 일정 밀집도
-방문 순서     = 최근접 이웃 + 영업·식사·이동시간 제약
+사용자 조건과 선택한 경로 구간
+→ Google Places에서 주변 후보 검색
+→ 등록된 장소와 카테고리 불일치 후보 제외
+→ 우회 거리와 여행 스타일 적합도 계산
+→ 검색된 후보만 OpenAI가 재정렬
+→ 서버 점수와 결합해 추천 이유와 함께 반환
 ```
 
-생성형 AI가 전체 일정을 결정하지 않고, 서버의 제약 기반 알고리즘이 재현 가능한 일정을 만든 뒤 AI가 추천과 재계획을 보조하도록 역할을 구분했습니다.
+OpenAI에는 후보의 Place ID, 이름, 주소, 카테고리, Google 유형, 평점과 리뷰 수만 전달합니다. Structured Output으로 응답 형식을 제한하고 검색 후보에 없는 Place ID는 서버에서 제외합니다. OpenAI 호출이 실패하면 우회 거리와 여행 스타일 적합도 기반 점수로 추천을 계속합니다.
 
-### 2. Google Maps 정책을 준수한 호출 구조 최적화
+### 2. 관계와 제약조건을 반영한 Day 배치
 
-Places 콘텐츠를 임의로 장기 보관하는 대신, 불필요한 요청 자체를 줄이는 방향으로 설계했습니다.
+거리만으로 장소를 묶지 않고 `ItineraryRoutePlanner`가 관계도, 지리적 근접도, 카테고리 다양성과 Day별 배치량을 함께 계산합니다.
 
-- 장소 검색 입력 `700ms` debounce와 이전 요청 취소·응답 순서 검증
-- 여행지 자동완성에 Autocomplete Session Token 적용
-- 일정 변경 시 전체가 아닌 영향받은 연결 구간만 Routes API 재계산
-- 이동수단별 Field Mask 최소화
-- Redis 기반 분당 호출량 제한과 외부 API 사용량 기록
+```text
+장소 관계 점수 = 스타일 벡터 코사인 유사도 × 0.7
+               + log(1 + 공동 방문 횟수) × 0.15
 
-### 3. AI 장애를 서비스 장애로 전파하지 않기
+Day 배치 점수 = 관계도 × 0.55
+              + 지리적 근접도 × 0.25
+              + 카테고리 다양성 × 0.55
+              - Day 배치량 × 0.10
+```
 
-OpenAI 키가 없거나 응답이 실패해도 규칙 기반 `ItineraryRoutePlanner`로 대체합니다. 외부 AI는 추천 품질을 높이는 보조 수단이며, 핵심 일정 기능의 가용성을 결정하지 않습니다.
+관계 기반 클러스터를 만든 뒤 최근접 이웃 순서로 정렬하며, 출발지, 체류시간, 식사시간, 일별 시작·종료 시각과 이동시간을 일정 생성에 반영합니다. OpenAI가 전체 일정을 직접 저장하지 않고 서버가 만든 미리보기를 사용자가 선택해 적용합니다.
 
-### 4. DB 상태와 실시간 화면의 일관성 유지
+### 3. Google Maps 호출 구조 최적화
 
-여행방 변경과 동시에 WebSocket 메시지를 보내면 트랜잭션 롤백 후에도 다른 사용자의 화면만 먼저 바뀔 수 있습니다. 활동 로그와 알림은 도메인 변경 트랜잭션에 함께 저장하고, 실시간 이벤트는 `AFTER_COMMIT` 단계에서만 전달하도록 분리했습니다.
+Places 콘텐츠를 무기한 저장해 재사용하는 방식 대신, 요청이 발생하는 시점과 범위를 줄였습니다.
 
-- 여행방·공개 카드 단위 topic과 사용자별 notification queue 분리
-- 여행방 멤버 여부를 확인한 뒤 접속 위치와 현재 작업 영역 공유
-- 계정 정지 시 기존 WebSocket 사용자 세션도 즉시 무효화
-- 끊어진 연결은 프론트엔드에서 재연결하고 서버 상태를 다시 조회해 동기화
+- 여행방 장소 검색에 `700ms` debounce, `AbortController`와 요청 ID 검증 적용
+- 여행지 자동완성에 `400ms` debounce와 Autocomplete Session Token 적용
+- Places, Routes 요청에서 필요한 필드만 `X-Goog-FieldMask`로 지정
+- 일정 항목 추가 시 삽입 위치 전후의 연결 구간만 Routes API 재계산
+- Redis의 1분 단위 카운터로 Places와 Routes 호출 한도 관리
+- 외부 API 제공자, 작업 종류, 성공 여부와 OpenAI 토큰 사용량 기록
 
-### 5. 인증부터 관리자 작업까지 이어지는 보안 경계
+### 4. DB 트랜잭션과 이동시간 계산 분리
 
-일반 사용자와 관리자 인증을 같은 로그인 성공 여부로만 구분하지 않고 계정 상태와 작업 위험도에 따라 검증 단계를 나눴습니다.
+일정 항목을 추가할 때 여행방 쓰기 락을 획득한 트랜잭션 안에서 Google Places와 Routes를 호출하면, 외부 API 지연 시간만큼 같은 여행방의 요청과 DB 커넥션이 대기할 수 있습니다.
 
-- Access Token과 Redis Refresh Token 회전으로 탈취 토큰 재사용 방지
-- 이메일·IP 단위 로그인 시도 제한과 이메일 인증·비밀번호 재설정
-- Google·Kakao OAuth2 로그인과 암호화 키 설정 시 제공자 토큰 암호화 저장
-- 관리자 로그인 및 부관리자 중요 작업에 6자리 OTP 추가 인증
-- 쿠키 기반 요청의 Origin 검증, 서버 권한 확인, 계정 정지·탈퇴 후 개인정보 파기
+```text
+일정 항목과 순서 저장
+→ 트랜잭션 커밋
+→ AFTER_COMMIT 이벤트 처리
+→ 변경된 연결 구간의 이동시간 계산
+→ 현재 일정 구조가 같을 때만 계산 결과 저장
+```
 
-### 6. k6 기반 부하 테스트와 실시간 병목 관찰
+`ItineraryTravelRecalculationListener`는 커밋 이후 필요한 구간만 계산합니다. 결과를 저장하기 전에 항목 ID와 앞뒤 장소가 요청 당시와 같은지 다시 검증하며, 외부 API 호출이 실패해도 이미 저장된 일정 변경은 되돌리지 않습니다.
+
+### 5. k6 태그와 관제 지표를 이용한 병목 추적
 
 `performance/`에 Smoke, Load, Spike, Stress, Soak, WebSocket 및 실제 사용자 흐름 시나리오를 구성했습니다.
 
 - `dashboard`, `trip_room`, `write` flow와 endpoint 태그로 느린 API를 단계적으로 추적
 - 최대 1,000 VU까지 증가시키며 p95/p99, 실패율과 WebSocket 연결시간 측정
 - HikariCP active/pending, Tomcat thread, CPU, GC 지표를 같은 시간축으로 비교
-- 애플리케이션·Access Log를 Alloy로 수집하고 Loki에서 API 오류와 병목 시점 추적
-- Access Log에서는 쿼리 문자열을 제외해 토큰·검색어 등 민감정보 노출 방지
-- `performance` 프로필에서는 Google Maps·OpenAI·Brevo·S3 호출을 차단해 테스트 과금 방지
+- 애플리케이션, Access Log를 Alloy로 수집하고 Loki에서 API 오류와 병목 시점 추적
+- Access Log에서는 쿼리 문자열을 제외해 토큰, 검색어 등 민감정보 노출 방지
+- `performance` 프로필에서는 Google Maps, OpenAI, Brevo, S3 호출을 차단해 테스트 과금 방지
 
-<details>
-<summary><b>1,000 VU 로컬 테스트 요약 보기</b></summary>
+#### 1,000 VU Before / After
 
-| 항목        |      결과 |
-| ----------- | --------: |
-| 최대 VU     |     1,000 |
-| HTTP 요청   | 552,038건 |
-| 전체 p95    |   78.85ms |
-| HTTP 실패율 |     0.06% |
-| 서버 5xx    |       0건 |
+<table>
+  <tr>
+    <th width="50%">Before</th>
+    <th width="50%">After</th>
+  </tr>
+  <tr>
+    <td><img width="100%" alt="1,000 VU 부하 테스트 개선 전" src="docs/images/performance/load-test-before.png" /></td>
+    <td><img width="100%" alt="1,000 VU 부하 테스트 개선 후" src="docs/images/performance/load-test-after.png" /></td>
+  </tr>
+</table>
 
-> 로컬 단일 장비에서 부하 발생기·서버·DB·모니터링을 함께 실행한 결과이므로 정확한 서버 한계치는 부하 발생기를 분리한 배포 환경에서 재검증해야 합니다.
+| 핵심 지표            | Before          | After     | 개선             |
+| -------------------- | --------------: | --------: | ---------------: |
+| 전체 p95             |          64.4ms |    37.0ms |            42.6% |
+| Hikari Pending 최대  |             189 |        34 |            82.0% |
+| Connection 점유 최대 | 22,800ms (22.8초) |     205ms |             99.1% |
+| Pool 포화 시작       |       약 393 VU | 약 734 VU | +341 VU (86.8%) |
 
-</details>
+HikariCP 조정과 쿼리 구조 및 인덱스 개선을 함께 적용해 처리량을 약 310 req/s로 유지하면서 DB 커넥션 대기와 응답 지연을 줄였습니다.
 
-### 7. Blue/Green 무중단 배포
-
-`dev` 브랜치 변경을 기준으로 GitHub Actions가 Docker 이미지를 GHCR에 게시하고 AWS SSM으로 EC2 배포를 수행합니다. 비활성 슬롯의 헬스체크가 통과한 뒤 트래픽을 전환하고 기존 슬롯을 종료해 다운타임과 실패 배포 위험을 줄입니다.
+> 위 수치는 여러 개선을 함께 적용한 종합 효과이며, 각 변경의 단독 효과를 의미하지 않습니다.
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
@@ -276,7 +264,7 @@ OpenAI 키가 없거나 응답이 실패해도 규칙 기반 `ItineraryRoutePlan
   />
 </p>
 
-<p align="center"><sub>아래 표에서 실제 적용 버전과 관제·외부 연동 기술을 확인할 수 있습니다.</sub></p>
+<p align="center"><sub>아래 표에서 실제 적용 버전과 관제, 외부 연동 기술을 확인할 수 있습니다.</sub></p>
 
 | 영역               | 기술                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -294,12 +282,12 @@ OpenAI 키가 없거나 응답이 실패해도 규칙 기반 `ItineraryRoutePlan
 
 <table>
   <tr>
-    <td align="center" width="50%">
-      <sub><b>Backend · IntelliJ IDEA</b></sub><br/><br/>
+    <td align="center" valign="top" width="50%">
+      <sub><b>Backend | IntelliJ IDEA</b></sub><br/><br/>
       <img width="100%" alt="백엔드 프로젝트 구조 (IntelliJ IDEA 프로젝트 패널)" src="docs/images/project-structure-backend-intellij.png" />
     </td>
-    <td align="center" width="50%">
-      <sub><b>Frontend · VS Code</b></sub><br/><br/>
+    <td align="center" valign="top" width="50%">
+      <sub><b>Frontend | VS Code</b></sub><br/><br/>
       <img width="100%" alt="프론트엔드 프로젝트 구조 (VS Code 탐색기 패널)" src="docs/images/project-structure-frontend-vscode.png" />
     </td>
   </tr>
@@ -379,7 +367,7 @@ npm run dev
 | Grafana    | http://localhost:3001                 |
 
 > [!CAUTION]
-> `docker compose down -v`는 MySQL·Redis·모니터링 볼륨을 삭제합니다. 데이터 초기화가 필요한 경우에만 사용하세요.
+> `docker compose down -v`는 MySQL, Redis, 모니터링 볼륨을 삭제합니다. 데이터 초기화가 필요한 경우에만 사용하세요.
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
@@ -429,13 +417,13 @@ SPRING_PROFILES_ACTIVE=local,performance ./gradlew bootRun
 
 ## 👥 팀원
 
-|                        GitHub                        |      이름      | 주요 역할      |
-| :--------------------------------------------------: | :------------: | -------------- |
-|           [@0-0v](https://github.com/0-0v)           | 팀원 정보 입력 | 담당 기능 입력 |
-|    [@HeungJunBag](https://github.com/HeungJunBag)    | 팀원 정보 입력 | 담당 기능 입력 |
-| [@JuyoungKim1024](https://github.com/JuyoungKim1024) | 팀원 정보 입력 | 담당 기능 입력 |
-
-> 팀원 이름과 역할은 발표 자료 및 실제 업무 분담표를 기준으로 최종 교체해주세요.
+<table align="center">
+  <tr>
+    <td align="center" valign="top" width="260"><a href="https://github.com/JuyoungKim1024"><img width="110" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" /></a><br/><b><a href="https://github.com/JuyoungKim1024">@JuyoungKim1024</a></b><br/><br/><sub><b>Team&nbsp;Leader</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>서버&nbsp;아키텍처</sub><br/><sub>실시간&nbsp;시스템</sub><br/><sub>보안&nbsp;및&nbsp;성능&nbsp;최적화</sub></td>
+    <td align="center" valign="top" width="260"><a href="https://github.com/HeungJunBag"><img width="110" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" /></a><br/><b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/><br/><sub><b>Team&nbsp;Member</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>알고리즘&nbsp;설계</sub><br/><sub>외부&nbsp;API&nbsp;최적화</sub><br/><sub>데이터&nbsp;동시성</sub></td>
+    <td align="center" valign="top" width="260"><a href="https://github.com/0-0v"><img width="110" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" /></a><br/><b><a href="https://github.com/0-0v">@0-0v</a></b><br/><br/><sub><b>Team&nbsp;Member</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>인증&nbsp;시스템</sub><br/><sub>클라우드&nbsp;배포</sub><br/><sub>서비스&nbsp;UI&nbsp;설계</sub></td>
+  </tr>
+</table>
 
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
