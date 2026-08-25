@@ -90,7 +90,7 @@
   <img
     width="94%"
     alt="Plamingo 핵심 기능: 장소 검색, 투표, Day 동선, 경비 정산"
-    src="docs/images/core-features-grid.png"
+    src="docs/images/core-features-grid-v2.png"
   />
 </p>
 
