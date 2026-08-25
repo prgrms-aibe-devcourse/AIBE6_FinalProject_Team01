@@ -77,7 +77,7 @@
       "type": "timeseries",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
-      "fieldConfig": { "defaults": { "unit": "ms", "min": 0 }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "s", "min": 0 }, "overrides": [] },
       "targets": [
         { "refId": "A", "expr": "max(k6_http_req_duration_avg)", "legendFormat": "avg" },
         { "refId": "B", "expr": "max(k6_http_req_duration_p95)", "legendFormat": "p95" },
@@ -121,7 +121,7 @@
       "type": "timeseries",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 35 },
-      "fieldConfig": { "defaults": { "unit": "ms", "min": 0 }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "s", "min": 0 }, "overrides": [] },
       "targets": [
         { "refId": "A", "expr": "max by (flow, endpoint) (k6_http_req_duration_p95{flow=~\"$flow\",endpoint=~\"$endpoint\"})", "legendFormat": "{{flow}} / {{endpoint}}" }
       ]
@@ -132,7 +132,7 @@
       "type": "timeseries",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 35 },
-      "fieldConfig": { "defaults": { "unit": "ms", "min": 0 }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "s", "min": 0 }, "overrides": [] },
       "targets": [
         { "refId": "A", "expr": "max by (flow, endpoint) (k6_http_req_duration_p99{flow=~\"$flow\",endpoint=~\"$endpoint\"})", "legendFormat": "{{flow}} / {{endpoint}}" }
       ]
