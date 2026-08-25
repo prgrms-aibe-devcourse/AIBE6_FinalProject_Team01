@@ -417,18 +417,16 @@ SPRING_PROFILES_ACTIVE=local,performance ./gradlew bootRun
 
 ## 👥 팀원
 
-## 👥 팀원
-
 <table align="center">
   <tr>
-    <td align="center" valign="top" width="260"><a href="https://github.com/JuyoungKim1024"><img width="110" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" /></a><br/><b><a href="https://github.com/JuyoungKim1024">@JuyoungKim1024</a></b><br/><br/><sub><b>Team&nbsp;Leader</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub>서버&nbsp;아키텍처</sub><br/><sub>실시간&nbsp;시스템</sub><br/><sub>보안&nbsp;및&nbsp;성능&nbsp;최적화</sub></td>
-    <td align="center" valign="top" width="260"><a href="https://github.com/HeungJunBag"><img width="110" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" /></a><br/><b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub>알고리즘&nbsp;설계</sub><br/><sub>외부&nbsp;API&nbsp;최적화</sub><br/><sub>데이터&nbsp;동시성</sub></td>
-    <td align="center" valign="top" width="260"><a href="https://github.com/0-0v"><img width="110" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" /></a><br/><b><a href="https://github.com/0-0v">@0-0v</a></b><br/><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub>인증&nbsp;시스템</sub><br/><sub>클라우드&nbsp;배포</sub><br/><sub>서비스&nbsp;UI&nbsp;설계</sub></td>
+    <td align="center" valign="top" width="260"><a href="https://github.com/JuyoungKim1024"><img width="110" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" /></a><br/><b><a href="https://github.com/JuyoungKim1024">@JuyoungKim1024</a></b><br/><br/><sub><b>Team&nbsp;Leader</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>서버&nbsp;아키텍처</sub><br/><sub>실시간&nbsp;시스템</sub><br/><sub>보안&nbsp;및&nbsp;성능&nbsp;최적화</sub></td>
+    <td align="center" valign="top" width="260"><a href="https://github.com/HeungJunBag"><img width="110" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" /></a><br/><b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/><br/><sub><b>Team&nbsp;Member</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>알고리즘&nbsp;설계</sub><br/><sub>외부&nbsp;API&nbsp;최적화</sub><br/><sub>데이터&nbsp;동시성</sub></td>
+    <td align="center" valign="top" width="260"><a href="https://github.com/0-0v"><img width="110" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" /></a><br/><b><a href="https://github.com/0-0v">@0-0v</a></b><br/><br/><sub><b>Team&nbsp;Member</b></sub><br/><sub>Backend&nbsp;/&nbsp;Frontend</sub><br/><br/><sub><b>담당&nbsp;기술&nbsp;도메인</b></sub><br/><sub>인증&nbsp;시스템</sub><br/><sub>클라우드&nbsp;배포</sub><br/><sub>서비스&nbsp;UI&nbsp;설계</sub></td>
   </tr>
 </table>
 
-
 <p align="right">(<a href="#readme-top">맨 위로</a>)</p>
+
 ---
 
 <div align="center">
