@@ -86,8 +86,11 @@
 
 ## ✨ 핵심 기능
 
-<p align="center">
-  <img width="100%" alt="Plamingo 핵심 기능 4종: 장소 검색, 투표, Day 동선, 경비 정산" src="docs/images/core-features-grid.png" />
+<p align="center"> <img
+    width="92%"
+    alt="Plamingo 핵심 기능"
+    src="docs/images/core-features-grid.png"
+  />
 </p>
 
 ### 구현 기능 한눈에 보기
@@ -413,31 +416,79 @@ SPRING_PROFILES_ACTIVE=local,performance ./gradlew bootRun
 
 ## 👥 팀원
 
-<table align="center">
-  <tr>
-    <td align="center" width="240">
+<table align="center"> <tr>
+    <td align="center" valign="top" width="260">
       <a href="https://github.com/JuyoungKim1024">
-        <img width="120" alt="JuyoungKim1024 프로필" src="https://github.com/JuyoungKim1024.png?size=120" />
-      </a><br/>
-      <b><a href="https://github.com/JuyoungKim1024">@JuyoungKim1024</a></b><br/>
-      <sub><b>Team Leader</b> / Backend / Frontend</sub><br/>
-      <sub>AI 추천, 실시간 협업, 관리자, 보안, 성능 최적화</sub>
+        <img
+          width="110"
+          alt="JuyoungKim1024 프로필"
+          src="https://github.com/JuyoungKim1024.png?size=120"
+        />
+      </a>
+      <br/>
+      <b>
+        <a href="https://github.com/JuyoungKim1024">
+          @JuyoungKim1024
+        </a>
+      </b>
+      <br/><br/>
+      <sub><b>Team Leader</b></sub>
+      <br/>
+      <sub>Backend / Frontend</sub>
+      <br/><br/>
+      <sub>
+        서버 아키텍처<br/>
+        실시간 시스템<br/>
+        보안 및 성능 최적화
+      </sub>
     </td>
-    <td align="center" width="240">
+
+    <td align="center" valign="top" width="260">
       <a href="https://github.com/HeungJunBag">
-        <img width="120" alt="HeungJunBag 프로필" src="https://github.com/HeungJunBag.png?size=120" />
-      </a><br/>
-      <b><a href="https://github.com/HeungJunBag">@HeungJunBag</a></b><br/>
-      <sub>Backend / Frontend</sub><br/>
-      <sub>일정, 동선 알고리즘, Google Maps, 장소 지도</sub>
+        <img
+          width="110"
+          alt="HeungJunBag 프로필"
+          src="https://github.com/HeungJunBag.png?size=120"
+        />
+      </a>
+      <br/>
+      <b>
+        <a href="https://github.com/HeungJunBag">
+          @HeungJunBag
+        </a>
+      </b>
+      <br/><br/>
+      <sub>Backend / Frontend</sub>
+      <br/><br/>
+      <sub>
+        알고리즘 설계<br/>
+        외부 API 최적화<br/>
+        데이터 동시성
+      </sub>
     </td>
-    <td align="center" width="240">
+
+    <td align="center" valign="top" width="260">
       <a href="https://github.com/0-0v">
-        <img width="120" alt="0-0v 프로필" src="https://github.com/0-0v.png?size=120" />
-      </a><br/>
-      <b><a href="https://github.com/0-0v">@0-0v</a></b><br/>
-      <sub>Backend / Frontend</sub><br/>
-      <sub>인증, 회원, 초대, 여행 기록, 정산, 공개 서비스</sub>
+        <img
+          width="110"
+          alt="0-0v 프로필"
+          src="https://github.com/0-0v.png?size=120"
+        />
+      </a>
+      <br/>
+      <b>
+        <a href="https://github.com/0-0v">
+          @0-0v
+        </a>
+      </b>
+      <br/><br/>
+      <sub>Backend / Frontend</sub>
+      <br/><br/>
+      <sub>
+        인증 시스템<br/>
+        클라우드 배포<br/>
+        서비스 UI 설계
+      </sub>
     </td>
   </tr>
 </table>
